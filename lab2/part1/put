@@ -1,0 +1,3 @@
+scp $1 cs460@ssh1.eecs.wsu.edu:../public_html/samples/LAB2.part1
+
+
