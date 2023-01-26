@@ -72,8 +72,6 @@ int dchar(unsigned char c, int x, int y)
         setpix(x+bit, y+r);    // x inc, but same y+r
         setpix(x+bit+1, y+r);    // x inc, but same y+r
       }
-	      
-        
     }
   }
 }
@@ -90,9 +88,11 @@ int undchar(unsigned char c, int x, int y)
       byte = *(caddress + r/2);
 
     for (bit=0; bit<16; bit++){
-        if (byte & (1<<bit/2))    // OR simply clr all pixels in this row
-	        clrpix(x+bit, y+r);
-          clrpix(x+bit+1, y+r);
+      if (byte & (1<<bit/2))    // OR simply clr all pixels in this row
+      {
+        clrpix(x+bit, y+r);
+        clrpix(x+bit+1, y+r);
+      }
     }
   }
 } 
