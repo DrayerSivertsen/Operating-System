@@ -42,7 +42,7 @@ void kbd_handler()
   kputs("kbd interrupt scancode = "); kprintx(scode);
 
 
-  if (scode == 0x12)
+  if (scode == 0x12) // flag for shift
   {
     if (shiftpressed == 1)
       shiftpressed = 0;
@@ -50,7 +50,7 @@ void kbd_handler()
       shiftpressed = 1;
   }
 
-  if (scode == 0x14)
+  if (scode == 0x14) // flag for ctrl
   {
     if (ctrlpressed == 1)
       ctrlpressed = 0;
@@ -76,7 +76,7 @@ void kbd_handler()
   if (shiftpressed == 0)
     c = ltab[scode];
 
-  if (scode == 0x21 && ctrlpressed == 1)
+  if (scode == 0x21 && ctrlpressed == 1) // ctrl + c
   {
     kputs("kbd interrupt : ");
     if (c != '\r')
@@ -85,19 +85,28 @@ void kbd_handler()
     return;
   }
 
-  if (scode == 0x23 && ctrlpressed == 1)
+  if (scode == 0x23 && ctrlpressed == 1) // ctrl + d
   {
-    c = (char)0x4;
+    kputs("kbd interrupt : ");
+    if (c != '\r')
+      kputs("EOF");
+    kputs("\n");
+    return;
   }
 
-  kputs("kbd interrupt : ");
-  if (c != '\r')
-    kputc(c);
-  kputs("\n");
 
-  kp->buf[kp->head++] = c;
-  kp->head %= 128;
-  kp->data++; kp->room--;
+  if (scode != 0x12 && scode != 0x14) // don't print ctrl or shift key
+  {
+    kputs("kbd interrupt : ");
+    if (c != '\r')
+      kputc(c);
+    kputs("\n");
+
+    kp->buf[kp->head++] = c;
+    kp->head %= 128;
+    kp->data++; kp->room--;
+  }
+
 }
 
 int kgetc()
