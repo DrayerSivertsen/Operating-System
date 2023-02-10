@@ -15,6 +15,8 @@ typedef volatile struct kbd{
 volatile KBD kbd;
 
 int release;       // key release flag
+int shiftpressed;
+int ctrlpressed;
 
 int kbd_init()
 {
@@ -39,6 +41,24 @@ void kbd_handler()
 
   kputs("kbd interrupt scancode = "); kprintx(scode);
 
+
+  if (scode == 0x12)
+  {
+    if (shiftpressed == 1)
+      shiftpressed = 0;
+    else
+      shiftpressed = 1;
+  }
+
+  if (scode == 0x14)
+  {
+    if (ctrlpressed == 1)
+      ctrlpressed = 0;
+    else
+      ctrlpressed = 1;
+  }
+
+    
   if (scode == 0xF0){  // it's key release 
      release = 1;      // set release flag
      return;
@@ -49,8 +69,12 @@ void kbd_handler()
      return;
   }
 
+  if (shiftpressed == 1) // left-shift pressed
+    c = utab[scode]; // uppercase key
+
   // map scode to ASCII in lowercase 
-  c = ltab[scode];
+  if (shiftpressed == 0)
+    c = ltab[scode];
 
   kputs("kbd interrupt : ");
   if (c != '\r')
