@@ -76,6 +76,20 @@ void kbd_handler()
   if (shiftpressed == 0)
     c = ltab[scode];
 
+  if (scode == 0x21 && ctrlpressed == 1)
+  {
+    kputs("kbd interrupt : ");
+    if (c != '\r')
+      kputs("Control-C key");
+    kputs("\n");
+    return;
+  }
+
+  if (scode == 0x23 && ctrlpressed == 1)
+  {
+    c = (char)0x4;
+  }
+
   kputs("kbd interrupt : ");
   if (c != '\r')
     kputc(c);
