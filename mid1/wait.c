@@ -12,7 +12,7 @@ int ksleep(int event)
 
   running->status = SLEEP; // change running PROC status to sleep
 
-  enqueue(&sleepList, running);
+  enqueue(&sleepList, running); // add to sleepList
 
   tswitch(); // switch process
   int_on(SR); // restore original CPSR
@@ -20,26 +20,23 @@ int ksleep(int event)
 
 int kwakeup(int event)
 {
-  PROC* p = sleepList;
-  PROC* prev = sleepList;
+  PROC *p, *tmp=0;
+
 
   int SR = int_off(); // disable IQR and return CPSR
-  while (p) // for each PROC *p do 
+  while ((p = dequeue(&sleepList)) != 0) // dequeue each PROC from sleepList
   {
-    if (p->status == SLEEP && p->event == event)
+    if (p->status == SLEEP && p->event == event) // save to ready queue if sleeping and correct event
     {
-      if (p == sleepList) // remove from head
-        sleepList = p->next;
-      else // remove from middle or end
-      {
-        prev->next = p->next;
-      }
       p->status = READY;
       enqueue(&readyQueue, p); // enter p into readyQueue
     }
-    prev = p;
-    p = p->next;
+    else
+    {
+      enqueue(&tmp, p); // put back to sleep
+    }
   }
+  sleepList = tmp; // reset head of queue
   int_on(SR); // restore original CPSR
 }
 
