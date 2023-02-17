@@ -105,6 +105,8 @@ int scheduler()
 int body()
 {
   char c, cmd[64];
+  char* input;
+  int event;
 
   printf("proc %d resume to body()\n", running->pid);
 
@@ -117,7 +119,7 @@ int body()
     printList("readyQueue", readyQueue);
     printsleepList(sleepList);
 	
-    printf("Enter a command [switch|fork] : ");
+    printf("Enter a command [switch|fork|sleep|wakeup] : ");
     kgets(cmd);
     printf("\n");
     
@@ -125,6 +127,23 @@ int body()
        tswitch();
     else if (strcmp(cmd, "fork")==0)
        kfork((int)body, 1);
+    else if (strcmp(cmd, "sleep")==0)
+    {
+      printf("input an event value to sleep : ");
+      kgets(input);
+      event = atoi(input);
+      printf("\n");
+      ksleep(event);
+    }
+    else if (strcmp(cmd, "wakeup")==0)
+    {
+      printf("input an event value to wakeup : ");
+      kgets(input);
+      event = atoi(input);
+      printf("\n");
+      kwakeup(event);
+    }
+
 
   }
 }

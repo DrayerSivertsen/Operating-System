@@ -37,7 +37,7 @@ int printsleepList(PROC *p)
 {
   printf("sleepList=");
   while(p){
-    printf("[%devent=%x]->", p->pid, p->event);
+    printf("[%devent=%d]->", p->pid, p->event);
     p = p->next;
   }
   printf("NULL\n");
