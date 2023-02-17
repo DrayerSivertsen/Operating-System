@@ -24,7 +24,7 @@ int kwakeup(int event)
   PROC* prev = sleepList;
 
   int SR = int_off(); // disable IQR and return CPSR
-  while (p)// for each PROC *p do 
+  while (p) // for each PROC *p do 
   {
     if (p->status == SLEEP && p->event == event)
     {
