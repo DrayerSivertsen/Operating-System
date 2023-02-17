@@ -59,6 +59,7 @@ int kernel_init()
 
 int kfork(int func, int priority)
 {
+  PROC *tmp;
   int i;
   PROC *p = dequeue(&freeList);
   if (p==0){
@@ -70,6 +71,21 @@ int kfork(int func, int priority)
   p->ppid = running->pid;
   p->parent = running;
   p->child = p->sibling = 0;
+
+  // implement process family tree as BINARY tree by using the child, sibling, parent pointers
+  p->parent = running; // set parent pointer
+
+  if (running->child == 0) // child pointer empty
+  {
+    running->child = p; // set child pointer
+  }
+  else // child pointer not empty
+  {
+    PROC *tmp = running->child;
+    while (tmp->sibling != 0) // iterate through siblings
+      tmp = tmp->sibling;
+    tmp->sibling = p; // set sibling pointer
+  }
   
   // set kstack for new proc to resume to func()
   // stmfd sp!, {r0-r12, lr} saves regs in stack as
@@ -105,13 +121,43 @@ int scheduler()
 int body()
 {
   char c, cmd[64];
-  char* input;
-  int event;
+  char* input, *status;
+  int event, exitCode;
+  PROC *tmp;
 
   printf("proc %d resume to body()\n", running->pid);
 
   while(1){
-    printf("P%d running  parent=%d\n", running->pid, running->ppid);
+    printf("P%d running  parent=%d  ", running->pid, running->ppid);
+    tmp = running;
+
+    printf("childlist=");
+    if (running->child == 0) // child pointer empty
+    {
+      printf("NULL\n");
+    }
+    else // child pointer not empty
+    {
+      tmp = tmp->child;
+      while (tmp->sibling != 0) // iterate through siblings
+      {
+        if (tmp->status == 0)
+          status = "FREE";
+        else if (tmp->status == 1)
+          status = "READY";
+        else if (tmp->status == 2)
+          status = "SLEEP";
+        else if (tmp->status == 3)
+          status = "BLOCK";
+        else if (tmp->status == 4)
+          status = "ZOMBIE";
+
+        printf("[%d %s]->", tmp->pid, status);
+        tmp = tmp->sibling;
+      }
+      printf("NULL\n");
+    }
+  
 
     // write code to print childList=[pid, status]->...->NULL
     
@@ -119,7 +165,7 @@ int body()
     printList("readyQueue", readyQueue);
     printsleepList(sleepList);
 	
-    printf("Enter a command [switch|fork|sleep|wakeup] : ");
+    printf("Enter a command [ps|switch|fork|sleep|wakeup|exit|wait] : ");
     kgets(cmd);
     printf("\n");
     
@@ -143,7 +189,18 @@ int body()
       printf("\n");
       kwakeup(event);
     }
-
+    else if (strcmp(cmd, "ps")==0)
+    {
+      ps();
+    }
+    else if (strcmp(cmd, "exit")==0)
+    {
+      printf("input an exitCode value : ");
+      kgets(input);
+      exitCode = atoi(input);
+      printf("\n");
+      kexit(exitCode);
+    }
 
   }
 }
