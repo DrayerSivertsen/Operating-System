@@ -1,0 +1,10 @@
+qemu-system-arm -M versatilepb -m 128M -kernel mid1.bin -serial mon:stdio
+
+
+
+ 
+
+
+
+
+
