@@ -57,6 +57,7 @@ int kexit(int exitCode)
       p1 = p1->parent;
 
     if (p1->status == SLEEP)
+      printf("wakeup P1\n");
       kwakeup(p1->event);
 
     p = p->child;
@@ -124,12 +125,14 @@ int kwait(int *status)
 
       tmp->status = FREE;
 
+      tmp->priority = 0; // reset for freeList
+
       enqueue(&freeList, tmp); // release child PROC to freeList as FREE
 
       prev = tmp->parent;
-      if (prev->child == tmp)
+      if (prev->child == tmp) // remove free status: child is free
         prev->child = tmp->sibling;
-      else
+      else // remove free status: sibling is free
       {
         prev = prev->child;
         while (prev->sibling != tmp)
@@ -137,11 +140,9 @@ int kwait(int *status)
           prev = prev->sibling;
         }
         prev->sibling = tmp->sibling;
-      }      
+      }
 
-      
-
-      printf("exit status=%d\n", *status);
+      printf("P%dwaited for a ZOMBIE, P%dexit status=%d\n", running->pid, tmp->pid, *status);
 
       return pid; // return ZOMBIE child pid
     }
