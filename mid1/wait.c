@@ -57,20 +57,23 @@ int kexit(int exitCode)
       p1 = p1->parent;
 
     if (p1->status == SLEEP)
-      kwakeup(p1->exitCode);
+      kwakeup(p1->event);
 
     p = p->child;
     p->parent = p1;
     p->ppid = p1->pid;
     while (p->sibling != 0) // iterate through siblings setting parent to P1
+    {
       p->parent = p1;
       p->ppid = p1->pid;
       p = p->sibling;
+    }
+
     
-    p1 = p1->child;
-    while (p1->sibling != 0) // iterate through siblings setting parent to P1
-      p1 = p1->sibling;
-    p1->sibling = running->child;
+    tmp = p1->child;
+    while (tmp->sibling != 0)
+      tmp = tmp->sibling;
+    tmp->sibling = running->child;
   }
 
   // 3. record exitValue in PROC.exitCode for parent to get
@@ -89,7 +92,7 @@ int kexit(int exitCode)
 int kwait(int *status)  
 {
   PROC *p;
-  PROC *tmp;
+  PROC *tmp, *prev;
 
   if (running->child == 0) // if caller has not child return error
   {
@@ -105,7 +108,7 @@ int kwait(int *status)
 
     if (tmp->status != ZOMBIE) // search for (any) ZOMBIE child
     {
-      while (tmp->sibling != 0 && tmp->sibling->status != ZOMBIE)
+      while (tmp != 0 && tmp->status != ZOMBIE)
       {
         tmp = tmp->sibling;
       }
@@ -117,10 +120,28 @@ int kwait(int *status)
 
       int pid = tmp->pid; // get ZOMBIE child pid
 
-      status = tmp->exitCode; // copy ZOMBIE child exitCode to *status
+      *status = tmp->exitCode; // copy ZOMBIE child exitCode to *status
 
       tmp->status = FREE;
+
       enqueue(&freeList, tmp); // release child PROC to freeList as FREE
+
+      prev = tmp->parent;
+      if (prev->child == tmp)
+        prev->child = tmp->sibling;
+      else
+      {
+        prev = prev->child;
+        while (prev->sibling != tmp)
+        {
+          prev = prev->sibling;
+        }
+        prev->sibling = tmp->sibling;
+      }      
+
+      
+
+      printf("exit status=%d\n", *status);
 
       return pid; // return ZOMBIE child pid
     }
