@@ -69,19 +69,17 @@ int kfork(int func, int priority)
   p->status = READY;
   p->priority = priority;
   p->ppid = running->pid;
-  p->parent = running;
+  p->parent = running; // set parent pointer
   p->child = p->sibling = 0;
 
   // implement process family tree as BINARY tree by using the child, sibling, parent pointers
-  p->parent = running; // set parent pointer
-
   if (running->child == 0) // child pointer empty
   {
     running->child = p; // set child pointer
   }
   else // child pointer not empty
   {
-    PROC *tmp = running->child;
+    tmp = running->child;
     while (tmp->sibling != 0) // iterate through siblings
       tmp = tmp->sibling;
     tmp->sibling = p; // set sibling pointer
@@ -128,19 +126,32 @@ int body()
   printf("proc %d resume to body()\n", running->pid);
 
   while(1){
-    printf("P%d running  parent=%d  ", running->pid, running->ppid);
-    tmp = running;
+    printf("P%d running  parent=%d ", running->pid, running->ppid);
 
-    printf("childlist=");
+    printf("childList=");
     if (running->child == 0) // child pointer empty
     {
       printf("NULL\n");
     }
     else // child pointer not empty
     {
-      tmp = tmp->child;
+      tmp = running->child;
+      if (tmp->status == 0)
+        status = "FREE";
+      else if (tmp->status == 1)
+        status = "READY";
+      else if (tmp->status == 2)
+        status = "SLEEP";
+      else if (tmp->status == 3)
+        status = "BLOCK";
+      else if (tmp->status == 4)
+        status = "ZOMBIE";
+      printf("[%d%s]->", tmp->pid, status);
+
       while (tmp->sibling != 0) // iterate through siblings
       {
+        tmp = tmp->sibling;
+
         if (tmp->status == 0)
           status = "FREE";
         else if (tmp->status == 1)
@@ -152,8 +163,7 @@ int body()
         else if (tmp->status == 4)
           status = "ZOMBIE";
 
-        printf("[%d %s]->", tmp->pid, status);
-        tmp = tmp->sibling;
+        printf("[%d%s]->", tmp->pid, status);
       }
       printf("NULL\n");
     }
@@ -200,6 +210,11 @@ int body()
       exitCode = atoi(input);
       printf("\n");
       kexit(exitCode);
+    }
+    else if (strcmp(cmd, "wait")==0)
+    {
+      int *status;
+      kwait(status);
     }
 
   }

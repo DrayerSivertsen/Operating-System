@@ -43,25 +43,44 @@ int kexit(int exitCode)
 {
   PROC *p = running;
   PROC *tmp;
+  PROC *p1;
   // 1. erase process user-mode context, e.g. close file descriptors, release resources, deallocate user-mode image memory, etc.
   // skip for now
 
   // 2. dispose of children processes, if any
-  for (int i=0; i<NPROC; i++){
-    tmp = &proc[i];
-    if (tmp->ppid == p->pid)
-    {
-      printf("give away children to P1\n");
-      tmp->ppid = 1; // send children processes to P1
-    }
+  if (p->child != 0) // child pointer empty
+  {
+    printf("give away children to P1\n");
+
+    p1 = p;
+    while (p1->pid != 1) // find P1
+      p1 = p1->parent;
+
+    if (p1->status == SLEEP)
+      kwakeup(p1->exitCode);
+
+    p = p->child;
+    p->parent = p1;
+    p->ppid = p1->pid;
+    while (p->sibling != 0) // iterate through siblings setting parent to P1
+      p->parent = p1;
+      p->ppid = p1->pid;
+      p = p->sibling;
+    
+    p1 = p1->child;
+    while (p1->sibling != 0) // iterate through siblings setting parent to P1
+      p1 = p1->sibling;
+    p1->sibling = running->child;
   }
+
   // 3. record exitValue in PROC.exitCode for parent to get
-  p->exitCode = exitCode;
+  running->exitCode = exitCode;
 
   // 4. become a ZOMBIE (but do not free the PROC)
-  p->status = ZOMBIE;
+  running->status = ZOMBIE;
 
   // 5. wakeup parent and, if needed, also INIT process P1
+  kwakeup(running->parent);
 
   // 6. switch process to give up CPU
   tswitch();
@@ -69,10 +88,46 @@ int kexit(int exitCode)
 
 int kwait(int *status)  
 {
-  PROC *p = running;
+  PROC *p;
   PROC *tmp;
 
-  if (p->)
+  if (running->child == 0) // if caller has not child return error
+  {
+    printf("no child found!\n");
+    return -1;
+  }
+
+
+  while(1)
+  {
+    p = running;
+    tmp = p->child;
+
+    if (tmp->status != ZOMBIE) // search for (any) ZOMBIE child
+    {
+      while (tmp->sibling != 0 && tmp->sibling->status != ZOMBIE)
+      {
+        tmp = tmp->sibling;
+      }
+    }
+
+    if (tmp->status == ZOMBIE)
+    {
+      printf("zombie found!\n");
+
+      int pid = tmp->pid; // get ZOMBIE child pid
+
+      status = tmp->exitCode; // copy ZOMBIE child exitCode to *status
+
+      tmp->status = FREE;
+      enqueue(&freeList, tmp); // release child PROC to freeList as FREE
+
+      return pid; // return ZOMBIE child pid
+    }
+
+    ksleep(running); // sleep on its PROC address
+  }
+
 }
 
 int ps()
