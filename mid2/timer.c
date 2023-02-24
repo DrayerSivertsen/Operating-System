@@ -80,6 +80,22 @@ void timer_handler(int n){
 
   if (t->tick == 60) // increment seconds
   {
+    // logic for timer queue
+    if (tq != 0)
+    {
+      tq->time -= 1;
+      printf("proc %d running\n", running->pid);
+      print_tq();
+
+      if (tq->time == 0)
+      {
+        TQE* tmp = dequeue_tq();
+        printf("kwakeup %d\n", ((PROC*)tmp->proc)->pid);
+        kwakeup(((PROC*)tmp->proc)->pid);
+      }
+    }
+
+
     putcursor();
 
     t->tick = 0; t->ss++;
@@ -103,7 +119,7 @@ void timer_handler(int n){
   }
 
 
-  color = 4;
+  // color = 1;
   for (int i=0; i<8; i++)
   {
     kpchar(t->clock[i], n, 70+i); // to line n of LCD

@@ -24,11 +24,97 @@ PROC proc[NPROC], *running, *freeList, *readyQueue, *sleepList;
 TQE *tq, tqe[NPROC]; // tq = timer queue pointer
 int procsize = sizeof(PROC);
 
+int tqe_init()
+{
+  int i;
+  PROC *p;
+  kprintf("tqe_init()\n");
+  // for (i=0; i<NPROC; i++)
+  // {
+  //   p = &tqe[i];
+  //   int time = 0;
+  //   p->proc = &proc[i];
+  //   p->next = p + 1;
+  // }
+}
+
+int enqueue_tq(int time)
+{
+  TQE *cur = tq;
+  TQE *prev;
+
+  if (tq == 0) // first element and empty
+  {
+    printf("first element and empty\n");
+    tq = &tqe[running->pid];
+    tq->time = time;
+    tq->proc = &proc[running->pid];
+    tq->next = 0;
+  }
+  else
+  {
+    while (time > cur->time && cur != 0) // time greater than cur move to next in queue
+    {
+      time -= cur->time;
+      prev = cur;
+      cur = cur->next;
+    }
+
+    if (cur == tq) // first element not empty
+    {
+      printf("first element not empty\n");
+      tq = &tqe[running->pid];
+      tq->next = cur;
+      tq->time = time;
+      tq->proc = &proc[running->pid];
+      cur->time -= time;
+    }
+    else if (cur == 0) // inserted at end
+    {
+      printf("inserted at end\n");
+      cur = &tqe[running->pid];
+      prev->next = cur;
+      cur->time = time;
+      cur->proc = &proc[running->pid];
+      cur->next = 0;
+    }
+    else // middle element not empty
+    {
+      printf("middle element not empty\n");
+      prev->next = &tqe[running->pid];
+      prev = prev->next;
+      prev->time = time;
+      prev->proc = &proc[running->pid];
+      prev->next = cur;
+      cur->time -= time;
+    }
+  }
+}
+
+TQE* dequeue_tq()
+{
+  TQE* tmp = tq;
+  tq = tq->next;
+
+  return tmp;
+}
+
+int print_tq()
+{
+  TQE *cur = tq;
+  printf("timerQueue = ");
+  while(cur){
+    printf("[%d,%d]->", ((PROC*)cur->proc)->pid, cur->time);
+    cur = cur->next;
+  }
+  printf("NULL\n");
+}
+
 int body();
 
 int kernel_init()
 {
-  int i; 
+  int i;
   PROC *p;
   kprintf("kernel_init()\n");
   for (i=0; i<NPROC; i++){
@@ -100,7 +186,7 @@ int kfork(int func, int priority)
   enqueue(&readyQueue, p);
 
   printf("proc %d kforked a child %d\n", running->pid, p->pid);
-  printList("readyQueue", readyQueue);
+  // printList("readyQueue", readyQueue);
   return p->pid;
 }
 
@@ -124,99 +210,112 @@ int body()
   int event, exitCode;
   PROC *tmp;
 
-  printf("proc %d resume to body()\n", running->pid);
+  // printf("proc %d resume to body()\n", running->pid);
 
   while(1){
-    printf("P%d running  parent=%d ", running->pid, running->ppid);
+    // printf("P%d running  parent=%d ", running->pid, running->ppid);
 
-    printf("childList=");
-    if (running->child == 0) // child pointer empty
-    {
-      printf("NULL\n");
-    }
-    else // child pointer not empty
-    {
-      tmp = running->child;
-      if (tmp->status == 0)
-        status = "FREE";
-      else if (tmp->status == 1)
-        status = "READY";
-      else if (tmp->status == 2)
-        status = "SLEEP";
-      else if (tmp->status == 3)
-        status = "BLOCK";
-      else if (tmp->status == 4)
-        status = "ZOMBIE";
-      printf("[%d%s]->", tmp->pid, status);
+    // printf("childList=");
+    // if (running->child == 0) // child pointer empty
+    // {
+    //   printf("NULL\n");
+    // }
+    // else // child pointer not empty
+    // {
+    //   tmp = running->child;
+    //   if (tmp->status == 0)
+    //     status = "FREE";
+    //   else if (tmp->status == 1)
+    //     status = "READY";
+    //   else if (tmp->status == 2)
+    //     status = "SLEEP";
+    //   else if (tmp->status == 3)
+    //     status = "BLOCK";
+    //   else if (tmp->status == 4)
+    //     status = "ZOMBIE";
+    //   printf("[%d%s]->", tmp->pid, status);
 
-      while (tmp->sibling != 0) // iterate through siblings
-      {
-        tmp = tmp->sibling;
+    //   while (tmp->sibling != 0) // iterate through siblings
+    //   {
+    //     tmp = tmp->sibling;
 
-        if (tmp->status == 0)
-          status = "FREE";
-        else if (tmp->status == 1)
-          status = "READY";
-        else if (tmp->status == 2)
-          status = "SLEEP";
-        else if (tmp->status == 3)
-          status = "BLOCK";
-        else if (tmp->status == 4)
-          status = "ZOMBIE";
+    //     if (tmp->status == 0)
+    //       status = "FREE";
+    //     else if (tmp->status == 1)
+    //       status = "READY";
+    //     else if (tmp->status == 2)
+    //       status = "SLEEP";
+    //     else if (tmp->status == 3)
+    //       status = "BLOCK";
+    //     else if (tmp->status == 4)
+    //       status = "ZOMBIE";
 
-        printf("[%d%s]->", tmp->pid, status);
-      }
-      printf("NULL\n");
-    }
+    //     printf("[%d%s]->", tmp->pid, status);
+    //   }
+    //   printf("NULL\n");
+    // }
   
 
     // write code to print childList=[pid, status]->...->NULL
     
-    printList("freeList  ", freeList);
-    printList("readyQueue", readyQueue);
-    printsleepList(sleepList);
+    // printList("freeList  ", freeList);
+    // printList("readyQueue", readyQueue);
+    // printsleepList(sleepList);
 	
-    printf("Enter a command [ps|switch|fork|sleep|wakeup|exit|wait] : ");
+    // printf("Enter a command [ps|switch|fork|sleep|wakeup|exit|wait] : ");
+    // kgets(cmd);
+    // printf("\n");
+    
+    // if (strcmp(cmd, "switch")==0)
+    //    tswitch();
+    // else if (strcmp(cmd, "fork")==0)
+    //    kfork((int)body, 1);
+    // else if (strcmp(cmd, "sleep")==0)
+    // {
+    //   printf("input an event value to sleep : ");
+    //   kgets(input);
+    //   event = atoi(input);
+    //   printf("\n");
+    //   ksleep(event);
+    // }
+    // else if (strcmp(cmd, "wakeup")==0)
+    // {
+    //   printf("input an event value to wakeup : ");
+    //   kgets(input);
+    //   event = atoi(input);
+    //   printf("\n");
+    //   kwakeup(event);
+    // }
+    // else if (strcmp(cmd, "ps")==0)
+    // {
+    //   ps();
+    // }
+    // else if (strcmp(cmd, "exit")==0)
+    // {
+    //   printf("input an exitCode value : ");
+    //   kgets(input);
+    //   exitCode = atoi(input);
+    //   printf("\n");
+    //   kexit(exitCode);
+    // }
+    // else if (strcmp(cmd, "wait")==0)
+    // {
+    //   int *status;
+    //   kwait(status);
+    // }
+
+    printList("readyQueue", readyQueue);
+    printf("proc %d running, enter a timer value : ", running->pid);
     kgets(cmd);
     printf("\n");
-    
-    if (strcmp(cmd, "switch")==0)
-       tswitch();
-    else if (strcmp(cmd, "fork")==0)
-       kfork((int)body, 1);
-    else if (strcmp(cmd, "sleep")==0)
-    {
-      printf("input an event value to sleep : ");
-      kgets(input);
-      event = atoi(input);
-      printf("\n");
-      ksleep(event);
-    }
-    else if (strcmp(cmd, "wakeup")==0)
-    {
-      printf("input an event value to wakeup : ");
-      kgets(input);
-      event = atoi(input);
-      printf("\n");
-      kwakeup(event);
-    }
-    else if (strcmp(cmd, "ps")==0)
-    {
-      ps();
-    }
-    else if (strcmp(cmd, "exit")==0)
-    {
-      printf("input an exitCode value : ");
-      kgets(input);
-      exitCode = atoi(input);
-      printf("\n");
-      kexit(exitCode);
-    }
-    else if (strcmp(cmd, "wait")==0)
-    {
-      int *status;
-      kwait(status);
-    }
+
+    int time = atoi(cmd);
+    enqueue_tq(time);
+    print_tq();
+
+
+    ksleep(running); // put current to sleep on PROC address
+
 
   }
 }

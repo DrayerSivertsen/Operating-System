@@ -58,12 +58,18 @@ int main()
  
    kprintf("Welcome to WANIX in Arm\n");
    kernel_init();
+   tqe_init();
 
    kputs("init and start timer\n");
    timer_init();        // initialize timer driver    
    timer_start(0);      // start timer 0
 
    kfork((int)body, 1);
+   kfork((int)body, 1);
+   kfork((int)body, 1);
+   kfork((int)body, 1);
+   kfork((int)body, 1);
+   printList("readyQueue", readyQueue);
    printf("P0 switch to P1\n");
    while(1){
      if (readyQueue)
