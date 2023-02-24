@@ -47,9 +47,13 @@ int sender()
 {
   char line[128];
 
+  printf("Enter a line for task%d to get : SENDER task %d waits for line from KBD\n", running->pid, running->pid);
+
   while(1) // use printf() to show actions
-  {          
-    get a line;      
+  {
+    kgetline(line);
+    kputs("\n");
+    printf("SENDER task %d got a line=[%s]\n", running->pid, line);
     send(line, 3);
   }
 }
@@ -58,10 +62,17 @@ int receiver()
 {
   char line[128];
   int pid;
+
   while(1) // use printf() to show actions
-  {         
-      pid = recv(line);
-      print messaage contents as sendPID, message
+  {
+    printf("RECEIVER task %d try to receive\n", running->pid);
+    printf("RUNNING PID: %d\n", running->pid);
+    printf("trying to switch\n");
+    tswitch();
+    printf("RUNNING PID: %d\n", running->pid);
+    pid = recv(line);
+    printf("RECEIVER task %d received: [%s] from task 1\n");
+    // print message contents as sendPID, message
   }
 }
 
@@ -82,15 +93,11 @@ int main()
  
    kprintf("Welcome to WANIX in Arm\n");
    kernel_init();
-   tqe_init();
-
-   kputs("init and start timer\n");
-   timer_init();        // initialize timer driver    
-   timer_start(0);      // start timer 0
 
    kfork(sender, 1);
    kfork(sender, 1);
    kfork(receiver, 1);
+
    printList("readyQueue", readyQueue);
    while(1){
      if (readyQueue)

@@ -52,24 +52,31 @@ int put_mbuf(MBUF *mp) // release a mbuf
 }
 int send(char *msg, int pid) // send msg to partet pid
 {
-    if (checkPid()<0) // validate receiving pid
+    if (pid < 0) // validate receiving pid
         return -1;
+    printf("task %d in send, msg=[%s] to task %d\n", running->pid, msg, pid);
     PROC *p = &proc[pid];
     MBUF *mp = get_mbuf();
     mp->pid = running->pid;
     mp->priority = 1;
     strcpy(mp->contents, msg);
+    printf("SEND: calling lock on mQlock\n");
     P(&p->mQlock);
         menqueue(&p->mQueue, mp);
+    printf("SEND: calling unlock on mQlock\n");
     V(&p->mQlock);
+    printf("SEND: calling unlock on nmsg\n");
     V(&p->nmsg);
     return 0;
 }
 int recv(char *msg) // recv msg from own msgqueue
 {
+    printf("RECV: calling lock on nmsg\n");
     P(&running->nmsg);
+    printf("RECV: calling lock on mQlock\n");
     P(&running->mQlock);
         MBUF *mp = mdequeue(&running->mQueue);
+    printf("SEND: calling unlock on mQlock\n");
     V(&running->mQlock);
     strcpy(msg, mp->contents);
     int sender = mp->pid;

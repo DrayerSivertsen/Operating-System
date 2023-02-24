@@ -60,7 +60,7 @@ void kbd_handler()
   if (c == '\r')
     V(&kp->kline); 
 
-  // kp->data++; kp->room--;
+  kp->data++; kp->room--;
   // kwakeup(&kp->data);
 }
 

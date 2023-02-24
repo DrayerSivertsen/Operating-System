@@ -41,8 +41,24 @@ char *KBD_BASE = 0x10006000;
 #define  ZOMBIE 4
 
 #define  printf  kprintf
+
+typedef struct semaphore 
+{
+  // int spinlock; // spin lock, needed only in MP systems
+  int value; // initial value of semaphore
+  struct proc *queue; // FIFO queue of blocked processes
+} SEMAPHORE;
+
+typedef struct mbuf
+{
+  struct mbuf *next; // pointer to next mbuf
+  int pid; // sender pid
+  int priority; // messge priority
+  char contents[128]; // message contents
+} MBUF;
  
-typedef struct proc{
+typedef struct proc 
+{
   struct proc *next;
   int    *ksp;
 
@@ -59,28 +75,15 @@ typedef struct proc{
 
   MBUF *mQueue;
   struct semaphore mQlock;
-  stuct semaphore nmsg;
+  struct semaphore nmsg;
   
   int kstack[SSIZE];
-}PROC;
+} PROC;
 
-typedef struct tq {
+typedef struct tq 
+{
   struct tq *next; // next element pointer
   int time; // request time
   struct PROC *proc; // pointer to PROC
   // int (*action)(); // 0|1|handler function pointer
 } TQE;
-
-typedef struct semaphore {
-  // int spinlock; // spin lock, needed only in MP systems
-  int value; // initial value of semaphore
-  struct proc *queue; // FIFO queue of blocked processes
-} SEMAPHORE;
-
-typedef struct mbuf
-{
-  struct mbuf *next; // pointer to next mbuf
-  int pid; // sender pid
-  int priority; // messge priority
-  char contents[128]; // message contents
-} MBUF;

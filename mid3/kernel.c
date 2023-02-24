@@ -211,9 +211,8 @@ int body()
   int event, exitCode;
   PROC *tmp;
 
-  printf("Enter a line for task1 to get : SENDER task 1 waits for line from KBD\n");
-
-  while(1){
-
+  while(1)
+  {
+    
   }
 }
