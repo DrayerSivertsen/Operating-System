@@ -1,0 +1,7 @@
+kcw.bin and mid1.bin are solutions of MID1
+
+It implements the process BINARY family tree and supports 
+   ps, switch, fork, sleep, wakeup, exit, wait  
+commands
+
+Download mid1.bin, run q1 to test the commands.
