@@ -9,6 +9,7 @@ int color;
 #include "kernel.c"
 #include "wait.c"
 #include "timer.c"
+#include "pv.c"
 
 TIMER *tp[4];
 
@@ -67,10 +68,7 @@ int main()
    kfork((int)body, 1);
    kfork((int)body, 1);
    kfork((int)body, 1);
-   kfork((int)body, 1);
-   kfork((int)body, 1);
    printList("readyQueue", readyQueue);
-   printf("P0 switch to P1\n");
    while(1){
      if (readyQueue)
         tswitch();

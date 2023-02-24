@@ -202,37 +202,6 @@ int scheduler()
   }
 }
 
-int P(struct semaphore *s)
-{
-  int SR = int_off();
-  s->value--;
-  if (s->value < 0)
-    block(s);
-  int_on(SR);
-}
-
-int block(struct semaphore *s)
-{
-  running->status = BLOCK;
-  enqueue(&s->queue, running);
-  tswitch();
-}
-
-int V(struct semaphore *s)
-{
-  int SR = int_off();
-  s->value++;
-  if (s->value <= 0)
-    signal(s);
-  int_on(SR);
-}
-
-int signal(struct semaphore *s)
-{
-  PROC *p = dequeue(&s->queue);
-  p->status = READY;
-  enqueue(&readyQueue, p);
-}
 
 // code of processes
 int body()
@@ -242,113 +211,9 @@ int body()
   int event, exitCode;
   PROC *tmp;
 
-  // printf("proc %d resume to body()\n", running->pid);
+  printf("Enter a line for task1 to get : SENDER task 1 waits for line from KBD\n");
 
   while(1){
-    // printf("P%d running  parent=%d ", running->pid, running->ppid);
-
-    // printf("childList=");
-    // if (running->child == 0) // child pointer empty
-    // {
-    //   printf("NULL\n");
-    // }
-    // else // child pointer not empty
-    // {
-    //   tmp = running->child;
-    //   if (tmp->status == 0)
-    //     status = "FREE";
-    //   else if (tmp->status == 1)
-    //     status = "READY";
-    //   else if (tmp->status == 2)
-    //     status = "SLEEP";
-    //   else if (tmp->status == 3)
-    //     status = "BLOCK";
-    //   else if (tmp->status == 4)
-    //     status = "ZOMBIE";
-    //   printf("[%d%s]->", tmp->pid, status);
-
-    //   while (tmp->sibling != 0) // iterate through siblings
-    //   {
-    //     tmp = tmp->sibling;
-
-    //     if (tmp->status == 0)
-    //       status = "FREE";
-    //     else if (tmp->status == 1)
-    //       status = "READY";
-    //     else if (tmp->status == 2)
-    //       status = "SLEEP";
-    //     else if (tmp->status == 3)
-    //       status = "BLOCK";
-    //     else if (tmp->status == 4)
-    //       status = "ZOMBIE";
-
-    //     printf("[%d%s]->", tmp->pid, status);
-    //   }
-    //   printf("NULL\n");
-    // }
-  
-
-    // write code to print childList=[pid, status]->...->NULL
-    
-    // printList("freeList  ", freeList);
-    // printList("readyQueue", readyQueue);
-    // printsleepList(sleepList);
-	
-    // printf("Enter a command [ps|switch|fork|sleep|wakeup|exit|wait] : ");
-    // kgets(cmd);
-    // printf("\n");
-    
-    // if (strcmp(cmd, "switch")==0)
-    //    tswitch();
-    // else if (strcmp(cmd, "fork")==0)
-    //    kfork((int)body, 1);
-    // else if (strcmp(cmd, "sleep")==0)
-    // {
-    //   printf("input an event value to sleep : ");
-    //   kgets(input);
-    //   event = atoi(input);
-    //   printf("\n");
-    //   ksleep(event);
-    // }
-    // else if (strcmp(cmd, "wakeup")==0)
-    // {
-    //   printf("input an event value to wakeup : ");
-    //   kgets(input);
-    //   event = atoi(input);
-    //   printf("\n");
-    //   kwakeup(event);
-    // }
-    // else if (strcmp(cmd, "ps")==0)
-    // {
-    //   ps();
-    // }
-    // else if (strcmp(cmd, "exit")==0)
-    // {
-    //   printf("input an exitCode value : ");
-    //   kgets(input);
-    //   exitCode = atoi(input);
-    //   printf("\n");
-    //   kexit(exitCode);
-    // }
-    // else if (strcmp(cmd, "wait")==0)
-    // {
-    //   int *status;
-    //   kwait(status);
-    // }
-
-    // printList("readyQueue", readyQueue);
-    // printf("proc %d running, enter a timer value : ", running->pid);
-    // kgets(cmd);
-    // printf("\n");
-
-    // int time = atoi(cmd);
-    // enqueue_tq(time);
-    // print_tq();
-
-
-    // ksleep(running); // put current to sleep on PROC address
-
-
 
   }
 }
