@@ -12,6 +12,7 @@ typedef struct kbd{
   char *base;
   char buf[128];
   int head, tail, data, room;
+  struct semaphore kline; // kline is a semaphore
 }KBD;
 
 KBD kbd;
@@ -26,6 +27,8 @@ int kbd_init()
   *(kp->base + KCLK)  = 8;
   kp->head = kp->tail = 0;
   kp->data = 0; kp->room = 128;
+  kp->kline.value = 0; // NO line to begin with
+  kp->kline.queue = 0; // NO waiter
 
   release = 0;
 }
@@ -53,8 +56,25 @@ void kbd_handler()
 
   kp->buf[kp->head++] = c;
   kp->head %= 128;
-  kp->data++; kp->room--;
-  kwakeup(&kp->data);
+
+  if (c == '\r')
+    V(&kp->kline); 
+
+  // kp->data++; kp->room--;
+  // kwakeup(&kp->data);
+}
+
+int kgetline(char line[])
+{
+  KBD *kp = &kbd;
+  P(&kp->kline); // wait for a line
+
+  char c;
+  while( (c = kgetc()) != '\r'){
+    *line++ = c;
+  }
+  *line = 0;
+  return strlen(line);
 }
 
 int kgetc()

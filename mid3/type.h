@@ -56,8 +56,12 @@ typedef struct proc{
   struct proc *parent;
   struct proc *child;
   struct proc *sibling;
+
+  MBUF *mQueue;
+  struct semaphore mQlock;
+  stuct semaphore nmsg;
   
-  int    kstack[SSIZE];
+  int kstack[SSIZE];
 }PROC;
 
 typedef struct tq {
@@ -68,7 +72,15 @@ typedef struct tq {
 } TQE;
 
 typedef struct semaphore {
-  int spinlock; // spin lock, needed only in MP systems
+  // int spinlock; // spin lock, needed only in MP systems
   int value; // initial value of semaphore
-  PROC *queue; // FIFO queue of blocked processes
+  struct proc *queue; // FIFO queue of blocked processes
 } SEMAPHORE;
+
+typedef struct mbuf
+{
+  struct mbuf *next; // pointer to next mbuf
+  int pid; // sender pid
+  int priority; // messge priority
+  char contents[128]; // message contents
+} MBUF;

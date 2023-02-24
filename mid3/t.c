@@ -10,6 +10,7 @@ int color;
 #include "wait.c"
 #include "timer.c"
 #include "pv.c"
+#include "message.c"
 
 TIMER *tp[4];
 
@@ -42,6 +43,28 @@ void IRQ_handler()
    }
 }
 
+int sender()
+{
+  char line[128];
+
+  while(1) // use printf() to show actions
+  {          
+    get a line;      
+    send(line, 3);
+  }
+}
+
+int receiver()
+{
+  char line[128];
+  int pid;
+  while(1) // use printf() to show actions
+  {         
+      pid = recv(line);
+      print messaage contents as sendPID, message
+  }
+}
+
 int body();
 
 int main()
@@ -65,9 +88,9 @@ int main()
    timer_init();        // initialize timer driver    
    timer_start(0);      // start timer 0
 
-   kfork((int)body, 1);
-   kfork((int)body, 1);
-   kfork((int)body, 1);
+   kfork(sender, 1);
+   kfork(sender, 1);
+   kfork(receiver, 1);
    printList("readyQueue", readyQueue);
    while(1){
      if (readyQueue)
