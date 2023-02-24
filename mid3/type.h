@@ -66,3 +66,9 @@ typedef struct tq {
   struct PROC *proc; // pointer to PROC
   // int (*action)(); // 0|1|handler function pointer
 } TQE;
+
+typedef struct semaphore {
+  int spinlock; // spin lock, needed only in MP systems
+  int value; // initial value of semaphore
+  PROC *queue; // FIFO queue of blocked processes
+} SEMAPHORE;

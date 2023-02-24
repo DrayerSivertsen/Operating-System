@@ -202,6 +202,38 @@ int scheduler()
   }
 }
 
+int P(struct semaphore *s)
+{
+  int SR = int_off();
+  s->value--;
+  if (s->value < 0)
+    block(s);
+  int_on(SR);
+}
+
+int block(struct semaphore *s)
+{
+  running->status = BLOCK;
+  enqueue(&s->queue, running);
+  tswitch();
+}
+
+int V(struct semaphore *s)
+{
+  int SR = int_off();
+  s->value++;
+  if (s->value <= 0)
+    signal(s);
+  int_on(SR);
+}
+
+int signal(struct semaphore *s)
+{
+  PROC *p = dequeue(&s->queue);
+  p->status = READY;
+  enqueue(&readyQueue, p);
+}
+
 // code of processes
 int body()
 {
@@ -304,17 +336,18 @@ int body()
     //   kwait(status);
     // }
 
-    printList("readyQueue", readyQueue);
-    printf("proc %d running, enter a timer value : ", running->pid);
-    kgets(cmd);
-    printf("\n");
+    // printList("readyQueue", readyQueue);
+    // printf("proc %d running, enter a timer value : ", running->pid);
+    // kgets(cmd);
+    // printf("\n");
 
-    int time = atoi(cmd);
-    enqueue_tq(time);
-    print_tq();
+    // int time = atoi(cmd);
+    // enqueue_tq(time);
+    // print_tq();
 
 
-    ksleep(running); // put current to sleep on PROC address
+    // ksleep(running); // put current to sleep on PROC address
+
 
 
   }
