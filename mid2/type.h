@@ -59,3 +59,10 @@ typedef struct proc{
   
   int    kstack[SSIZE];
 }PROC;
+
+typedef struct tq {
+  struct tq *next; // next element pointer
+  int time; // request time
+  struct PROC *proc; // pointer to PROC
+  // int (*action)(); // 0|1|handler function pointer
+} TQE;

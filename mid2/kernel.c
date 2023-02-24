@@ -21,6 +21,7 @@ typedef struct proc{
 }PROC;
 ***************************************/
 PROC proc[NPROC], *running, *freeList, *readyQueue, *sleepList;
+TQE *tq, tqe[NPROC]; // tq = timer queue pointer
 int procsize = sizeof(PROC);
 
 int body();

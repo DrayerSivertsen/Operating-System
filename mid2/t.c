@@ -21,7 +21,7 @@ void copy_vectors(void) {
     while(vectors_src < &vectors_end)
        *vectors_dst++ = *vectors_src++;
 }
-int kprintf(char *fmt, ...);
+
 void IRQ_handler()
 {
     int vicstatus, sicstatus;
