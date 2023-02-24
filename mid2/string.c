@@ -6,24 +6,6 @@
 
 int kprintf(char *, ...);
 
-int kstrcmp(char *s1, char *s2)
-{
-  while((*s1 && *s2) && (*s1==*s2)){
-      s1++; s2++;
-  }
-  if ((*s1==0) && (*s2==0))
-    return 0;
-  return(*s1 - *s2);
-}
-
-int kstrcpy(char *dest, char *src)
-{
-  while(*src){
-    *dest++ = *src++;
-  }
-  *dest = 0;
-}
-
 int atoi(char *s)
 {
   int v = 0;
@@ -34,7 +16,6 @@ int atoi(char *s)
   //kprintf("v=%d\n", v);
   return v;
 }
-
 int geti()
 {
   char s[16];
@@ -69,4 +50,23 @@ int kstrlen(char *s)
     i++; s++;
   }
   return i;
+}
+
+int kstrcmp(char *s1, char *s2)
+{
+  while((*s1 && *s2) && (*s1==*s2)){
+      s1++; s2++;
+  }
+  if ((*s1==0) && (*s2==0))
+    return 0;
+  return(*s1 - *s2);
+
+}
+
+int kstrcpy(char *dest, char *src)
+{
+  while(*src){
+    *dest++ = *src++;
+  }
+  *dest = 0;
 }

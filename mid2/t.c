@@ -22,6 +22,8 @@ void copy_vectors(void) {
        *vectors_dst++ = *vectors_src++;
 }
 
+int kprintf(char *fmt, ...);
+
 void IRQ_handler()
 {
     int vicstatus, sicstatus;
@@ -52,6 +54,7 @@ int main()
    // allow KBD interrupts   
    *(VIC_BASE + VIC_INTENABLE) |= (1<<31); // allow VIC IRQ31
    *(SIC_BASE + SIC_INTENABLE) |= (1<<3);  // KBD int=3 on SIC
+   *(VIC_BASE + VIC_INTENABLE) |= (1<<4);  // timer0,1 at bit4 
  
    kprintf("Welcome to WANIX in Arm\n");
    kernel_init();
