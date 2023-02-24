@@ -8,6 +8,7 @@ int color;
 #include "exceptions.c"
 #include "kernel.c"
 #include "wait.c"
+#include "timer.c"
 
 void copy_vectors(void) {
     extern u32 vectors_start;
@@ -30,6 +31,10 @@ void IRQ_handler()
           kbd_handler();
        }
     }
+
+   if (vicstatus & 0x0010){   // timer0,1=bit4
+      timer_handler(0);
+   }
 }
 
 int body();
@@ -48,6 +53,11 @@ int main()
  
    kprintf("Welcome to WANIX in Arm\n");
    kernel_init();
+
+   kputs("test timer driver by interrupts\n");
+   timer_init();        // initialize timer driver    
+   timer_start(0);      // start timer 0
+
    kfork((int)body, 1);
    printf("P0 switch to P1\n");
    while(1){
