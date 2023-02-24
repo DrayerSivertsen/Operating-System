@@ -62,7 +62,7 @@ void timer_init()
     *(tp->base+TBGLOAD) = 0xE0000/60;
 
     tp->tick = tp->hh = tp->mm = tp->ss = 0;
-    
+
     strcpy((char *)tp->clock, "00:00:00");
   }
 }

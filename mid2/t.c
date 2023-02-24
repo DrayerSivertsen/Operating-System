@@ -10,6 +10,8 @@ int color;
 #include "wait.c"
 #include "timer.c"
 
+TIMER *tp[4];
+
 void copy_vectors(void) {
     extern u32 vectors_start;
     extern u32 vectors_end;
@@ -30,7 +32,7 @@ void IRQ_handler()
       if (sicstatus & (1 << 3)){
           kbd_handler();
        }
-    }
+   }
 
    if (vicstatus & 0x0010){   // timer0,1=bit4
       timer_handler(0);
@@ -54,7 +56,7 @@ int main()
    kprintf("Welcome to WANIX in Arm\n");
    kernel_init();
 
-   kputs("test timer driver by interrupts\n");
+   kputs("init and start timer\n");
    timer_init();        // initialize timer driver    
    timer_start(0);      // start timer 0
 
