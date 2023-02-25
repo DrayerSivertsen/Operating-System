@@ -60,23 +60,23 @@ int send(char *msg, int pid) // send msg to partet pid
     mp->pid = running->pid;
     mp->priority = 1;
     strcpy(mp->contents, msg);
-    printf("SEND: calling lock on mQlock\n");
-    P(&p->mQlock);
+    // printf("SEND: calling lock on mQlock\n");
+    // P(&p->mQlock);
         menqueue(&p->mQueue, mp);
-    printf("SEND: calling unlock on mQlock\n");
+    // printf("SEND: calling unlock on mQlock\n");
     V(&p->mQlock);
-    printf("SEND: calling unlock on nmsg\n");
+    // printf("SEND: calling unlock on nmsg\n");
     V(&p->nmsg);
     return 0;
 }
 int recv(char *msg) // recv msg from own msgqueue
 {
-    printf("RECV: calling lock on nmsg\n");
+    // printf("RECV: calling lock on nmsg\n");
     P(&running->nmsg);
-    printf("RECV: calling lock on mQlock\n");
+    // printf("RECV: calling lock on mQlock\n");
     P(&running->mQlock);
         MBUF *mp = mdequeue(&running->mQueue);
-    printf("SEND: calling unlock on mQlock\n");
+    // printf("SEND: calling unlock on mQlock\n");
     V(&running->mQlock);
     strcpy(msg, mp->contents);
     int sender = mp->pid;

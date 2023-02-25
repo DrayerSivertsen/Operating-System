@@ -126,7 +126,7 @@ int kernel_init()
   }
   proc[NPROC-1].next = 0; 
   freeList = &proc[0];    // freeList = ALL free procs 
-  printList("freeList", freeList);
+  // printList("freeList", freeList);
   
   readyQueue = 0;
   sleepList = 0;
@@ -141,7 +141,7 @@ int kernel_init()
   running = p;           // running -> proc[0] with pid=0
 
   kprintf("running = %d\n", running->pid);
-  printList("freeList", freeList);
+  // printList("freeList", freeList);
 }
 
 int kfork(int func, int priority)

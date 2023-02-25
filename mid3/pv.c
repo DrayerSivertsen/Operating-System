@@ -4,7 +4,7 @@ int P(struct semaphore *s)
   s->value--;
   if (s->value < 0)
   {
-    printf("lock the CR\n");
+    // printf("lock the CR\n");
     block(s);
   }
   int_on(SR);
@@ -23,7 +23,7 @@ int V(struct semaphore *s)
   s->value++;
   if (s->value <= 0)
   {
-    printf("unlock the CR\n");
+    // printf("unlock the CR\n");
     signal(s);
   }
 

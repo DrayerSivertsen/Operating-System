@@ -47,14 +47,15 @@ int sender()
 {
   char line[128];
 
-  printf("Enter a line for task%d to get : SENDER task %d waits for line from KBD\n", running->pid, running->pid);
 
   while(1) // use printf() to show actions
   {
+    printf("Enter a line for task%dto get : SENDER task %dwaits for line from KBD\n", running->pid, running->pid);
     kgetline(line);
     kputs("\n");
     printf("SENDER task %d got a line=[%s]\n", running->pid, line);
     send(line, 3);
+    printf("SENDER task %dsend [%s] to RECEIVER\n", running->pid, line);
   }
 }
 
@@ -65,13 +66,9 @@ int receiver()
 
   while(1) // use printf() to show actions
   {
-    printf("RECEIVER task %d try to receive\n", running->pid);
-    printf("RUNNING PID: %d\n", running->pid);
-    printf("trying to switch\n");
-    tswitch();
-    printf("RUNNING PID: %d\n", running->pid);
+    printf("RECEIVER task %dtry to receive\n", running->pid);
     pid = recv(line);
-    printf("RECEIVER task %d received: [%s] from task 1\n");
+    printf("RECEIVER task %dreceived: [%s] from task %d\n", running->pid, line, pid);
     // print message contents as sendPID, message
   }
 }
@@ -92,11 +89,14 @@ int main()
    *(VIC_BASE + VIC_INTENABLE) |= (1<<4);  // timer0,1 at bit4 
  
    kprintf("Welcome to WANIX in Arm\n");
+   msg_init();
    kernel_init();
 
-   kfork(sender, 1);
-   kfork(sender, 1);
-   kfork(receiver, 1);
+   printf("P%dkfork tasks\n", running->pid);
+
+   kfork((int)sender, 1);
+   kfork((int)sender, 1);
+   kfork((int)receiver, 1);
 
    printList("readyQueue", readyQueue);
    while(1){
