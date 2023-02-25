@@ -54,7 +54,7 @@ int send(char *msg, int pid) // send msg to partet pid
 {
     if (pid < 0) // validate receiving pid
         return -1;
-    printf("task %d in send, msg=[%s] to task %d\n", running->pid, msg, pid);
+    printf("task %din send, msg=[%s] to task %d\n", running->pid, msg, pid);
     PROC *p = &proc[pid];
     MBUF *mp = get_mbuf();
     mp->pid = running->pid;

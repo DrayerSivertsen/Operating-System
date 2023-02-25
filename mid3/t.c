@@ -53,7 +53,7 @@ int sender()
     printf("Enter a line for task%dto get : SENDER task %dwaits for line from KBD\n", running->pid, running->pid);
     kgetline(line);
     kputs("\n");
-    printf("SENDER task %d got a line=[%s]\n", running->pid, line);
+    printf("SENDER task %dgot a line=[%s]\n", running->pid, line);
     send(line, 3);
     printf("SENDER task %dsend [%s] to RECEIVER\n", running->pid, line);
   }
