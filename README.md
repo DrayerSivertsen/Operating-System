@@ -1,4 +1,5 @@
-# This repo includes various OS level development projects working toward the design and implementation of a REAL embedded operating system.
+# Operating System
+This repo includes various OS level development projects working torward the design and implementation of a REAL embedded operating system.
 
 ## Project Descriptions
 ### Lab1
