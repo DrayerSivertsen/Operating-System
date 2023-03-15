@@ -35,7 +35,7 @@ int svc_handler(int a, int b, int c, int d)
      case 6: ksleep(running->pid);
      case 7: kwakeup((int)b); break;
      case 8: kexit((int)b); break;
-     case 9: kwait(status); break;
+     case 9: kwait((int *)b); break;
        
      case 90: r = kgetc() & 0x7F;  break;
      case 91: r = kputc(b); break;
