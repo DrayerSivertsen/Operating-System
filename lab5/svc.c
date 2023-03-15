@@ -21,6 +21,7 @@ int ktswitch()
 int svc_handler(int a, int b, int c, int d)
 {
   int r;
+  int *status;
   
   // printf("svc_handler: a=%d b=%d c=%d d=%d\n",a,b,c,d);
   switch(a){
@@ -30,11 +31,11 @@ int svc_handler(int a, int b, int c, int d)
      case 3: r = kchname((char *)b); break;
      case 4: r = ktswitch(); break;
 
-       // 5: kfork
-       // 6: sleep
-       // 7: wakeup
-       // 8: exit
-       // 9: wait
+     case 5: kfork((char *)b); break;
+     case 6: ksleep(running->pid);
+     case 7: kwakeup((int)b); break;
+     case 8: kexit((int)b); break;
+     case 9: kwait(status); break;
        
      case 90: r = kgetc() & 0x7F;  break;
      case 91: r = kputc(b); break;

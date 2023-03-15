@@ -48,6 +48,16 @@ int uswitch()
   return syscall(4,0,0,0);
 }
 
+int ufork()
+{
+  uprintf("syscall to kernel kfork, ")
+  char s[32];
+  uprintf("enter a filename : ");
+  ugetline(s);
+  printf("\n");
+  return syscall(5,s,0,0);
+}
+
 int ugetc()
 {
   return syscall(90,0,0,0);
