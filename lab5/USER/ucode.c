@@ -1,7 +1,7 @@
 int umenu()
 {
   uprintf("-----------------------------------------------------------\n");
-  uprintf("getpid getppid ps chname switch fork sleep wakeup exit wait\n");
+  uprintf("getpid getppid ps chname switch kfork sleep wakeup exit wait\n");
   uprintf("-----------------------------------------------------------\n");
 }
 
@@ -50,7 +50,7 @@ int uswitch()
 
 int ufork()
 {
-  uprintf("syscall to kernel kfork, ")
+  uprintf("syscall to kernel kfork, ");
   char s[32];
   uprintf("enter a filename : ");
   ugetline(s);
@@ -70,7 +70,7 @@ int uwakeup()
   int event;
   uprintf("syscall to kernel kwakeup, ");
   uprintf("input an event value to wakeup : ");
-  kgets(input);
+  ugetline(input);
   event = atoi(input);
   uprintf("\n");
   return syscall(7,event,0,0);
@@ -82,7 +82,7 @@ int uexit()
   int exitCode;
   uprintf("syscall to kernel kexit, ");
   uprintf("input an exitCode value : ");
-  kgets(input);
+  ugetline(input);
   exitCode = atoi(input);
   uprintf("\n");
   return syscall(8,exitCode,0,0);

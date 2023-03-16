@@ -6,10 +6,10 @@ arm-none-eabi-ld -T u.ld us.o $1.o -Ttext=0x80000000 -o $1.elf
 
 arm-none-eabi-objcopy -O binary $1.elf $1
 
-mount -o loop ../sdimage /mnt
+sudo mount -o loop ../sdimage /mnt
 cp -av $1 /mnt/bin
 #ls -l /mnt/bin
-umount /mnt
+sudo umount /mnt
 
 rm $1
 rm *.o *.elf

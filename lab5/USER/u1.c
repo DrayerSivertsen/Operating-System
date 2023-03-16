@@ -32,11 +32,21 @@ int main()
     if (strcmp(line, "getppid")==0)
        ugetppid();
     if (strcmp(line, "ps")==0)
-       ups();
+       ups();  
     if (strcmp(line, "chname")==0)
        uchname();
     if (strcmp(line, "switch")==0)
        uswitch();
+    if (strcmp(line, "kfork")==0)
+       ufork();
+    if (strcmp(line, "sleep")==0)
+       usleep();
+    if (strcmp(line, "wakeup")==0)
+       uwakeup();
+    if (strcmp(line, "exit")==0)
+       uexit();
+    if (strcmp(line, "wait")==0)
+       uwait();
   }
 }
 
