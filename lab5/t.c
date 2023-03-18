@@ -147,7 +147,7 @@ int main()
    unlock();
 
    kfork("u1");    // P1 Umode image = /bin/u1 file
-   kfork("u2");    // P2 Umode image = /bin/u2 file
+  //  kfork("u2");    // P2 Umode image = /bin/u2 file
    
    color = CYAN;
    kprintf("P0 switch to P1 : ");

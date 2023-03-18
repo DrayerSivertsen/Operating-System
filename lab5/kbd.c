@@ -70,13 +70,13 @@ int kbd_init()
   release = 0;
   control = 0;
 
-  printf("Detect KBD scan code: press the ENTER key : ");
-  while( (*(kp->base + KSTAT) & 0x10) == 0);
-  scode = *(kp->base + KDATA);
-  printf("scode=%x ", scode);
-  if (scode==0x5A)
-    keyset=2;
-  printf("keyset=%d\n", keyset);
+  // printf("Detect KBD scan code: press the ENTER key : ");
+  // while( (*(kp->base + KSTAT) & 0x10) == 0);
+  // scode = *(kp->base + KDATA);
+  // printf("scode=%x ", scode);
+  // if (scode==0x5A)
+  keyset=2;
+  // printf("keyset=%d\n", keyset);
 }
 
 // kbd_handler1() for scan code set 1
