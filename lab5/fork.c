@@ -25,7 +25,7 @@ Same as kfork() before EXCEPT:
 4. load(filenmae, p); load filenmae (/bin/u1 or /bin/u2) to p's UMODE address
 5. set p's Kmode stack for it to 
            resume to goUmode
-   which causes p to return to Umode to execcute filename
+   which causes p to return to Umode to execute filename
 ***********************************************************/
 
 PROC *kfork(char *filename)
@@ -63,6 +63,7 @@ PROC *kfork(char *filename)
   // ptable entry flag=|AP=11|0|dom1|1|CB10|=110|0001|1|1110|=0xC3E or 0xC32    
   //ptable[2048] = 0x800000 + (p->pid - 1)*0x100000|0xC3E; // CB=11
   ptable[2048] = 0x800000 + (p->pid - 1)*0x100000|0xC32;   // CB=00
+  ptable[2049] = 0x1000000 + (p->pid - 1)*0x100000|0xC32; // mapping to 2MB
   // entries 2049 to 4095 all 0 for INVALID
 
   p->cpsr = (int *)0x10;    // saved cpsr = previous mode was Umode
