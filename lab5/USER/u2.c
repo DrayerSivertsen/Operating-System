@@ -6,7 +6,7 @@ typedef unsigned int    u32;
 #include "uio.c"
 #include "ucode.c"
 
-int main()
+int main(char *s)
 {
   int pid, ppid;
   char line[64];
@@ -15,6 +15,8 @@ int main()
   mode = get_cpsr();
   mode = mode & 0x1F;
   printf("CPU MODE=%x\n", mode);
+
+  printf("kfork(): s=%x string=%s\n", &s, s);
 
   pid = getpid();
   ppid = getppid();

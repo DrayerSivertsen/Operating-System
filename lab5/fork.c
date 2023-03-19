@@ -30,7 +30,7 @@ Same as kfork() before EXCEPT:
 
 PROC *kfork(char *filename)
 {
-  int i; 
+  int i, upa, usp; 
   int pentry, *ptable;
 
   PROC *p = dequeue(&freeList);
@@ -105,11 +105,22 @@ PROC *kfork(char *filename)
   ustacktop = (int *)(0x800000+(p->pid)*0x100000 + 0x100000);
   TRY to set it to OFFSET 1MB in its section; regardless of pid
   **********************************************************************/
+
+  upa = p->pgdir[2048] & 0xFFFF0000; // PA of Umode image
+
+  usp = upa + 0x100000 - 128;
+
+  strcpy((char*)usp, "My name is Drayer Sivertsen\n");
+
   // p->usp = (int *)(0x80100000);
-  p->usp = (int *)VA(0x100000);
+  p->usp = (int*)VA(0x100000 - 128); // (int *)VA(0x100000); <- previously was
+
+
+
 
   // p->kstack[SSIZE-1] = (int)0x80000000;
-  p->kstack[SSIZE-1] = VA(0);
+  p->kstack[SSIZE-1] = VA(0); // return uLR = VA(0)
+  p->kstack[SSIZE - 14] = p->usp;
 
   // |---------------------- goUmode -----------------
   // |ulr u12 u11 u10 u9 u8 u7 u6 u5 u4 u3 u2 u2 u0
