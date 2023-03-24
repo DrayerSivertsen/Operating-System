@@ -60,8 +60,14 @@ int ufork()
 
 int usleep()
 {
-  uprintf("syscall to kernel ksleep\n");
-  return syscall(6,0,0,0);
+  char* input;
+  int event;
+  uprintf("syscall to kernel ksleep, ");
+  uprintf("input an event value to sleep : ");
+  ugetline(input);
+  event = atoi(input);
+  uprintf("\n");
+  return syscall(6,event,0,0);
 }
 
 int uwakeup()

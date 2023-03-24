@@ -32,7 +32,7 @@ int svc_handler(int a, int b, int c, int d)
      case 4: r = ktswitch(); break;
 
      case 5: kfork((char *)b); break;
-     case 6: ksleep(running->pid);
+     case 6: ksleep((int)b);
      case 7: kwakeup((int)b); break;
      case 8: kexit((int)b); break;
      case 9: kwait((int *)b); break;
