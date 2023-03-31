@@ -96,7 +96,7 @@ int scheduler()
   color = running->pid;
   if (running != old){
     printf("switch to proc %d pgdir at %x\n", running->pid, running->pgdir);
-    printf("pgdir[2048] = %x ", running->pgdir[2048]);
+    printf("pgdir[2048] = %x\n", running->pgdir[2048]);
     printf("pgdir[2049] = %x\n", running->pgdir[2049]);
     switchPgdir((u32)running->pgdir);
   }

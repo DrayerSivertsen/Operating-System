@@ -52,6 +52,7 @@ PROC *kfork(char *filename)
   //|     addr     | |       |AP|0|DOM1|1|CB|10|
   // 0xC12 = 1100 0001 0010 =|11|0|0001|1|00|10|       // AP=11 for Umode RW
   ptable[2048]=(0x800000 + (p->pid-1)*0x100000)|0xC32; // entry 2048 | 0xC32  
+  ptable[2049] = 0x1000000 + (p->pid - 1)*0x100000|0xC32; // mapping to 2MB
 
   // set kstack to resume to goUmode
   for (i=1; i<29; i++)  // all 28 cells = 0
@@ -104,10 +105,8 @@ int fork()
   int *ptable, pentry;  
   
   // 1. Get a proc from freeList
-  printList(freeList);
   PROC *p = dequeue(&freeList);
   if (p==0) { printf("fork failed\n"); return -1; }
-  printList(freeList);
   // 2. write code to build pgdir and pgtable for p as in kfork()
   // build p's pgtable 
   p->pgdir = (int *)(0x600000 + (p->pid - 1)*0x4000);
@@ -135,8 +134,16 @@ int fork()
   p->priority = 1;
   PA = (char *)(running->pgdir[2048] & 0xFFFF0000); // parent Umode PA
   CA = (char *)(p->pgdir[2048] & 0xFFFF0000); // child Umode PA
+  printf("copy %xto %x\n", PA, CA);
   memcpy(CA, PA, 0x100000); // copy 1MB of Umode image
-  for (int i = 0; i <= 14; i++)
+
+  PA = (char *)(running->pgdir[2049] & 0xFFFF0000); // parent Umode PA
+  CA = (char *)(p->pgdir[2049] & 0xFFFF0000); // child Umode PA
+  printf("copy %xto %x\n", PA, CA);
+  memcpy(CA, PA, 0x100000); // copy 1MB of Umode image
+
+  printf("copy kernel mode stack\n");
+  for (i = 1; i <= 14; i++) // copy bottom 14 entries of kstack
   {
     p->kstack[SSIZE - i] = running->kstack[SSIZE - i];
   }
@@ -145,8 +152,12 @@ int fork()
   p->kstack[SSIZE - 15] = (int)goUmode; // shild resumes to goUmode
   p->ksp = &(p->kstack[SSIZE - 28]); // child saved ksp
   p->usp = running->usp; // same usp as parent
+  p->upc = (int *)VA(p->pid);  
+  printf("FIX UP child resumes PC to %x\n", (int)running->upc - 36);
   p->cpsr = running->cpsr; // same cpsr as parent
   enqueue(&readyQueue, p);
-  return p->pid;
+  printf("KERNEL: proc %dforked a child %d: ", running->pid, p->pid);
+  printQ(readyQueue);
 
+  return p->pid;
 }
