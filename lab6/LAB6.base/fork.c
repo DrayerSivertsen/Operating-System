@@ -99,11 +99,54 @@ PROC *kfork(char *filename)
 
 int fork()
 {
-  printf("fork(): under construction\n");
-  return -1;
+  int i;
+  char *PA, *CA;
+  int *ptable, pentry;  
   
-  // 1. p = getproc(&freeList);
-  // 2. write code to build pgidr and pgtable for p as in kfork()
+  // 1. Get a proc from freeList
+  printList(freeList);
+  PROC *p = dequeue(&freeList);
+  if (p==0) { printf("fork failed\n"); return -1; }
+  printList(freeList);
+  // 2. write code to build pgdir and pgtable for p as in kfork()
+  // build p's pgtable 
+  p->pgdir = (int *)(0x600000 + (p->pid - 1)*0x4000);
+  ptable = p->pgdir;
+  // initialize pgtable
+  for (i=0; i<4096; i++)
+    ptable[i] = 0;
+
+  pentry = 0x412;
+  for (i=0; i<258; i++){
+    ptable[i] = pentry;
+    pentry += 0x100000;
+  }
+
+  // UMODE VA mapping: Assume each proc has a 1MB Umode space at 8MB+(pid-1)*1MB
+  // ptable entry flag=|AP=11|0|dom1|1|CB10|=110|0001|1|1110|=0xC3E or 0xC32    
+  //ptable[2048] = 0x800000 + (p->pid - 1)*0x100000|0xC3E; // CB=11
+  ptable[2048] = 0x800000 + (p->pid - 1)*0x100000|0xC32;   // CB=00
+  ptable[2049] = 0x1000000 + (p->pid - 1)*0x100000|0xC32; // mapping to 2MB
   // 3. fork code as in Chapter 7.7.6
+
+  p->ppid = running->pid;
+  p->parent = running;
+  p->status = READY;
+  p->priority = 1;
+  PA = (char *)(running->pgdir[2048] & 0xFFFF0000); // parent Umode PA
+  CA = (char *)(p->pgdir[2048] & 0xFFFF0000); // child Umode PA
+  memcpy(CA, PA, 0x100000); // copy 1MB of Umode image
+  for (int i = 0; i <= 14; i++)
+  {
+    p->kstack[SSIZE - i] = running->kstack[SSIZE - i];
+  }
+
+  p->kstack[SSIZE - 14] = 0; // child return pid = 0
+  p->kstack[SSIZE - 15] = (int)goUmode; // shild resumes to goUmode
+  p->ksp = &(p->kstack[SSIZE - 28]); // child saved ksp
+  p->usp = running->usp; // same usp as parent
+  p->cpsr = running->cpsr; // same cpsr as parent
+  enqueue(&readyQueue, p);
+  return p->pid;
 
 }

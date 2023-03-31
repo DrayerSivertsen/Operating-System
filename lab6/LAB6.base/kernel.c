@@ -82,6 +82,7 @@ int init()
 int scheduler()
 {
   PROC *old=running;
+  char *cp;
 
   kprintf("proc %d in scheduler\n", running->pid);
   if (running->status==READY)
@@ -90,12 +91,13 @@ int scheduler()
   running = dequeue(&readyQueue);
 
   kprintf("next running = %d\n", running->pid);
-  color = running->pid;
 
   // must switch to new running's pgdir; possibly need also flush TLB
+  color = running->pid;
   if (running != old){
-    printf("switch to proc %d pgdir at %x ", running->pid, running->pgdir);
-    printf("pgdir[2048] = %x\n", running->pgdir[2048]);
+    printf("switch to proc %d pgdir at %x\n", running->pid, running->pgdir);
+    printf("pgdir[2048] = %x ", running->pgdir[2048]);
+    printf("pgdir[2049] = %x\n", running->pgdir[2049]);
     switchPgdir((u32)running->pgdir);
   }
 }  
