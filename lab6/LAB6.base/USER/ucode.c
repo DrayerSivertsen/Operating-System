@@ -113,7 +113,8 @@ int uexec()
   mypid = getpid();
   uprintf("enter a command string : ");
   ugetline(line);
-  uprintf("\nline=%s\n", line);
+  uprintf("\nEXEC: proc %d", mypid);
+  uprintf(" line = %s\n", line);
   r = syscall(10,line,0,0);
   if (r<0)
      uprintf("%d exec failed\n", mypid);
