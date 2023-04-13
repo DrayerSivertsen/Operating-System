@@ -1,0 +1,9 @@
+
+echo linking 
+arm-none-eabi-ld -T t.ld *.o ../driver/*.o ../fs/*.o -Ttext=0x10000 -o t.elf
+arm-none-eabi-objcopy -O binary t.elf t.bin
+
+echo copy t.bin to ../
+cp -av t.bin ../
+
+#rm *.o *.elf ../fs/*.o ../driver/*.o

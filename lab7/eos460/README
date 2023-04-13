@@ -1,0 +1,18 @@
+fs/buffer.kcw.O   is KCW's buffer.o file
+To use it:        copy it as buffer.o
+========================================================
+
+fs/buffer.base.c  is the base code for buffer.c file
+TO use it:
+
+========================================================
+cd fs
+cp buffer.base.c buffer.c
+mkk buffer      # to generate buffer.o  fle
+
+# LATER: write YOUR own buffer.c file in fs/
+# mkk buffer    # to generate YOUR buffer.o  file
+========================================================
+
+cd ..           # cd back to top directory
+mk              # to generate new t.bin AND run t.bin
