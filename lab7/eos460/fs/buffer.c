@@ -14,8 +14,6 @@ struct buf readbuf, writebuf;  // 2 dedicated buffers
 
 int binit()
 {
-
-  printf("HELLOOO\n");
   readbuf.buf = 0x700000;
   writebuf.buf = 0x700000 + 1024;
 
@@ -47,7 +45,6 @@ struct buf *getblk(int dev, int blk)
 
   while (1)
   {
-    printf("here\n");
     P(freebuf); // get a free buffer first
     bp = devtab[dev].dev_list;
     // (2). if bp in dev_list
@@ -79,7 +76,7 @@ struct buf *getblk(int dev, int blk)
             bp = bp->next_free;
           }
 
-          bp->busy = 1;
+          P(bp->lock);
           return bp;
         }
         // bp in cache but BUSY
