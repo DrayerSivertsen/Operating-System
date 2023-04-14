@@ -1,5 +1,5 @@
 
-(cd kernel; mk)
+(cd kernel; ./mk)
 
 echo ready to go?
 read dummy
