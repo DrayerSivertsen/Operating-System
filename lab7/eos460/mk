@@ -1,4 +1,6 @@
 
+(cd fs; ./mkk buffer; cd ../)
+
 (cd kernel; ./mk)
 
 echo ready to go?
