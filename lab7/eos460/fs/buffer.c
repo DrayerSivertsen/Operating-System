@@ -62,11 +62,13 @@ void removefreelist(struct buf *bp)
       if (cur == freelist)
       {
         freelist = cur->next_free;
+        cur->next_free = 0;
         return;
       }
       else
       {
         prev->next_free = cur->next_free;
+        cur->next_free = 0;
         return;
       }
     }
@@ -79,6 +81,7 @@ void removefreelist(struct buf *bp)
 struct buf *getblk(int dev, int blk)
 {
   struct buf *bp;
+  requests++;
 
   while (1)
   {
@@ -87,6 +90,8 @@ struct buf *getblk(int dev, int blk)
     bp = indevlist(dev, blk); // check if bp in dev_list
     if (bp)
     {
+      hits++;
+      
       if (bp->busy == 0) // bp not busy
       {
         removefreelist(bp); // remove bp from free list
@@ -125,16 +130,13 @@ struct buf *getblk(int dev, int blk)
 struct buf *bread(int dev, int blk)
 {
   struct buf *bp = getblk(dev, blk); // get a buffer for (dev,blk)
-  requests++;
+
   if (bp->valid == 0) {
     bp->opcode = 0x18; // READ
     getblock(bp->blk, bp->buf);
     bp->valid = 1;
   }
-  else
-  {
-    hits++;
-  }
+
   return bp;
 }
 
