@@ -81,17 +81,16 @@ void removefreelist(struct buf *bp)
 struct buf *getblk(int dev, int blk)
 {
   struct buf *bp;
-  requests++;
+  hits++;
 
   while (1)
   {
+    requests++;
     P(freebuf); // get a free buffer first
     
     bp = indevlist(dev, blk); // check if bp in dev_list
     if (bp)
     {
-      hits++;
-      
       if (bp->busy == 0) // bp not busy
       {
         removefreelist(bp); // remove bp from free list
