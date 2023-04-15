@@ -14,28 +14,65 @@ struct buf readbuf, writebuf;  // 2 dedicated buffers
 
 int binit()
 {
-  readbuf.buf = 0x700000;
-  writebuf.buf = 0x700000 + 1024;
-
   // add all buffers into the freelist
-  freelist = &buffer[0];
+  freelist = buffer;
   struct buf *tmp = freelist;
 
   for (int i = 1; i < NBUF; i++)
   {
     tmp->next_free = &buffer[i];
-    tmp->buf = 700000 + i*1024;
     tmp = tmp->next_free;
   }
 
-  // initialize lock
+  // initialize lock and buf
   for (int i = 0; i < NBUF; i++)
   {
+    buffer[i].buf = 700000 + i*1024;
     buffer[i].lock.value = 1;
   }
 
   // initialize freebuf
   freebuf.value = 1;
+}
+
+struct buf *indevlist(int dev, int blk)
+{
+  struct buf *bp = devtab[dev].dev_list;
+
+  while (bp)
+  {
+    if (bp->dev == dev && bp->blk == blk) // bp in dev_list
+    {
+      return bp;
+    } 
+    bp = bp->next_dev;
+  }
+  return 0;
+}
+
+void removefreelist(struct buf *bp)
+{
+  struct buf *prev;
+  struct buf *cur = freelist;
+  while (cur)
+  {
+    if (cur == bp)
+    {
+      // remove bp from free list
+      if (cur == freelist)
+      {
+        freelist = cur->next_free;
+        return;
+      }
+      else
+      {
+        prev->next_free = cur->next_free;
+        return;
+      }
+    }
+    prev = cur;
+    cur = cur->next_free;
+  }
 }
 
 /* getblk: return a buffer=(dev,blk) for exclusive use */
@@ -45,61 +82,32 @@ struct buf *getblk(int dev, int blk)
 
   while (1)
   {
-    // printf("while 1 loop\n");
     P(freebuf); // get a free buffer first
-    bp = devtab[dev].dev_list;
-    // (2). if bp in dev_list
-    while (bp)
+    
+    bp = indevlist(dev, blk); // check if bp in dev_list
+    if (bp)
     {
-      // printf("looking through dev list\n");
-      if (bp->dev == dev && bp->blk == blk) // bp in dev_list
+      if (bp->busy == 0) // bp not busy
       {
-        printf("bp in dev_list\n");
-        if (bp->busy == 0) // bp not BUSY
-        {
-          bp = freelist;
-          struct buf *prev;
-          while (bp)
-          {
-            if (bp->dev == dev && bp->blk == blk)
-            {
-              // remove bp from free list
-              if (bp == freelist)
-              {
-                freelist = bp->next_free;
-              }
-              else
-              {
-                prev->next_free = bp->next_free;
-              }
-              break;
-            }
-            prev = bp;
-            bp = bp->next_free;
-          }
-
-          P(bp->lock);
-          return bp;
-        }
-        // bp in cache but BUSY
-        V(freebuf); // give up the free buffer
-        P(bp->lock); // wait in bp queue
+        removefreelist(bp); // remove bp from free list
+        P(bp->lock); // lock bp but does not wait
         return bp;
       }
-      bp = bp->next_dev;
+      // bp in cache but BUSY
+      V(freebuf); // give up the free buffer
+      P(bp->lock); // wait in bp queue
+      return bp;
     }
-    // printf("getblk bp not in cache\n");
     // bp not in cache, try to create a bp=(dev, blk)
     bp = freelist;
-    if (bp)
-      freelist = bp->next_free;
-      bp->next_free = 0;
-
+    if (freelist)
+      freelist = freelist->next_free;
 
     P(bp->lock);
     if (bp->dirty)
     {
       awrite(bp); // write bp out ASYNC, no wait
+      bp->next_free = 0;
       continue;
     }
 
@@ -108,6 +116,7 @@ struct buf *getblk(int dev, int blk)
     bp->blk = blk;
     bp->valid = 0;
     bp->dirty = 0;
+    bp->next_free = 0;
     return bp;
   }
 } 
@@ -116,12 +125,15 @@ struct buf *getblk(int dev, int blk)
 struct buf *bread(int dev, int blk)
 {
   struct buf *bp = getblk(dev, blk); // get a buffer for (dev,blk)
+  requests++;
   if (bp->valid == 0) {
     bp->opcode = 0x18; // READ
-    // printf("bread bp: dev=%d  blk=%d\n", bp->dev, bp->blk);
     getblock(bp->blk, bp->buf);
-    // printf("stuck after getblock\n");
     bp->valid = 1;
+  }
+  else
+  {
+    hits++;
   }
   return bp;
 }
@@ -135,7 +147,6 @@ int bwrite(struct buf *bp) // release bp marked VALID but DIRTY
 
 int awrite(struct buf *bp) // write DIRTY bp out to disk
 {
-  printf("inside awrite\n");
   bp->opcode = 0x25; // WRITE
   putblock(bp->blk, bp->buf);
   bp->dirty = 0; // turn off DIRTY flag
@@ -145,34 +156,29 @@ int awrite(struct buf *bp) // write DIRTY bp out to disk
 /* brelse: releases a buffer as FREE to freelist */
 int brelse(struct buf *bp)
 {
-  if (bp->lock.queue)
+  // printf(" brelse bp\n");
+  if (bp->lock.value < 0)
   {
     V(bp->lock);
     return;
   }
-  if (bp->dirty && freebuf.queue)
+  if (bp->dirty && freebuf.value < 0)
   {
     awrite(bp);
     return;
   }
 
   struct buf *tmp = freelist;
-  while (tmp->next_free)
+  while (tmp && tmp->next_free)
   {
     tmp = tmp->next_free;
-    // printf("stuck here\n");
   }
 
   tmp->next_free = bp;
-  bp->next_free = 0;
-
-  // clear buffer
-  for (int i = 0; i < 1024; i++)
-    bp->buf[i] = 0;
   
-  // printf("cleared buf\n");
   V(bp->lock);
   V(freebuf);
+  return;
 }
 
 int khits(int y, int z) // syscall hits entry
