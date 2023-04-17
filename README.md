@@ -18,6 +18,11 @@ Development of interprocess communication through semaphore locking to manage wr
 ### Lab5
 Additions to previous process functions to include umode (user mode) and kernel mode.
 
+### Lab6
+Expansion upon kernel fork command to support user mode, and addition of exec function to process different user mode images. This lab is working towards the os layer communication of user mode and kernel mode.
+
+### Lab7
+Buffer management support to include multiple buffers and buffer caching. This is to show demonstrate the principles of buffer management algorithms as well as its shortcomings. The project compares the performances of the Unix buffer management algorithm and the PV algorithm. 
 
 
 ## Overview of topics includes:
