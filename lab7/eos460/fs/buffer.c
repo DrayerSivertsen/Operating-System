@@ -111,7 +111,6 @@ struct buf *getblk(int dev, int blk)
     if (bp->dirty)
     {
       awrite(bp); // write bp out ASYNC, no wait
-      bp->next_free = 0;
       continue;
     }
 
@@ -120,7 +119,6 @@ struct buf *getblk(int dev, int blk)
     bp->blk = blk;
     bp->valid = 0;
     bp->dirty = 0;
-    bp->next_free = 0;
     return bp;
   }
 } 
