@@ -86,7 +86,8 @@ void do_pipe(char *cmdLine, int *pd)
     if (pd)
     {
         close(pd[0]);
-        dup2(pd[1], 1);
+        close(1);
+        dup(pd[1]);
         close(pd[1]);
     }
  
@@ -94,7 +95,7 @@ void do_pipe(char *cmdLine, int *pd)
     strncpy(tmp_line, cmdLine, 128);
     token(tmp_line);
     int hasPipe = scan(cmdLine);
-    printf("head: %s, tail: %s\n", head, tail);
+    
  
     if(hasPipe)
     {
@@ -104,14 +105,14 @@ void do_pipe(char *cmdLine, int *pd)
         if(pid)
         {
             close(lpd[1]);
-            dup2(lpd[0], 0);
+            close(0);
+            dup(lpd[0]);
             close(lpd[0]);
-            printf("tail before doCommand: %s\n", tail);
+            
             do_command(tail);
         }
         else
         {
-            printf("head before do_pipe: %s\n", head);
             do_pipe(head, lpd);
         }
     }
