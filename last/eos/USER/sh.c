@@ -138,7 +138,7 @@ main()
         // printf("cmdline: %s\n", cmdline);
         cmd = argv[0];
 
-        if (line[0] == 0)
+        if (argv[0] == 0)
             continue;
  
         // if command is non-trivial (not cd or exit)

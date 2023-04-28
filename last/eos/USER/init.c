@@ -46,12 +46,12 @@ main()
     int in_ttyS1, out_ttyS1; // file descriptors for S1
 
     // set file descriptors 0, 1
-    in_console = open("dev/tty0", O_RDONLY);
-    out_console = open("dev/tty0", O_WRONLY);
-    in_ttyS0 = open("dev/ttyS0", O_RDONLY);
-    out_ttyS0 = open("dev/ttyS0", O_WRONLY);
-    in_ttyS1 = open("dev/ttyS1", O_RDONLY);
-    out_ttyS1 = open("dev/ttyS1", O_WRONLY);
+    // in_console = open("dev/tty0", O_RDONLY);
+    // out_console = open("dev/tty0", O_WRONLY);
+    // in_ttyS0 = open("dev/ttyS0", O_RDONLY);
+    // out_ttyS0 = open("dev/ttyS0", O_WRONLY);
+    // in_ttyS1 = open("dev/ttyS1", O_RDONLY);
+    // out_ttyS1 = open("dev/ttyS1", O_WRONLY);
 
     printf("INIT: fork a login proc on console\n");
     console = fork();
