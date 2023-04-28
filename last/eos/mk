@@ -1,4 +1,4 @@
-(cd USER; ./mku init; ./mku login; ./mku sh; ./mku ls; ./mku cat; ./mku grep; ./mku more; ./mku l2u; cd ..)
+(cd USER; ./mku init; ./mku login; ./mku sh; ./mku ls; ./mku cat; ./mku grep; ./mku more; ./mku l2u; ./mku cp; cd ..)
  
 (cd kernel; ./mk)
  
