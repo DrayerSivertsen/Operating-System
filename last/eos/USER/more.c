@@ -4,7 +4,7 @@ int more(char *filename)
 {
     char mybuf[1024];
     int n;
-    int count = 25;
+    int count = 24;
     char input;
 
     int fd = open(filename, 0);
@@ -17,23 +17,20 @@ int more(char *filename)
         count--;
     }
 
-    // while (n = fgets(fd, mybuf))
-    // {
-    //     if (count == 0)
-    //     {
-    //         getc(input);
-    //         if (input == '\r')
-    //             count = 25;
-    //         else if (input == ' ')
-    //             count = 1;
-    //     }
+    while (n = fgetline(fd, mybuf))
+    {
+        if (count == 0)
+        {
+            input = getc();
+            if (input == '\r')
+                count = 24;
+            else if (input == ' ')
+                count = 1;
+        }
 
-    //     if (count == 0)
-    //         break;
-
-    //     printf("%s", mybuf);
-    //     count--;
-    // }
+        printf("%s", mybuf);
+        count--;
+    }
 
     close(fd);
 }
@@ -48,6 +45,9 @@ main()
     struct stat mystat, st_tty, st0, st1;
     char tty_buf[128];
 
+    int count = 24;
+    char input;
+
 
     gettty(tty_buf);
 
@@ -59,20 +59,32 @@ main()
     {
         if (st_tty.st_ino != st0.st_ino) // stdin has been redirected
         {
-            while (n = getline(buf))
-            {
-                buf[n] = 0; // as a null terminated string
+            int fd = dup(0);
+            close(0);
+            open(tty_buf, 0);
 
-                if (strlen(buf) == strlen(argv[1]))
+            while (n = fgetline(fd, buf))
+            {
+                if (count == 0)
+                    break;
+
+                printf("%s", buf);
+                count--;
+            }
+
+            while (n = fgetline(fd, buf))
+            {
+                if (count == 0)
                 {
-                    if (strcmp(buf, argv[1]) == 0)
-                        printf("%s", buf);
+                    input = getc();
+                    if (input == '\r')
+                        count = 24;
+                    else if (input == ' ')
+                        count = 1;
                 }
-                else
-                {
-                    if (strstr(buf, argv[1]))
-                        printf("%s", buf);
-                }
+
+                printf("%s", buf);
+                count--;
             }
         }
         else
@@ -81,18 +93,28 @@ main()
             {
                 buf[n] = 0; // as a null terminated string
 
-                if (strlen(buf) == strlen(argv[1]))
+                if (count == 0)
+                    break;
+
+                printf("%s", buf);
+                count--;
+            }
+
+            while (n = gets(buf))
+            {
+                buf[n] = 0; // as a null terminated string
+
+                if (count == 0)
                 {
-                    if (strcmp(buf, argv[1]) == 0)
-                        printf("%s\n", buf);
-                }
-                else
-                {
-                    if (strstr(buf, argv[1]))
-                        printf("%s\n", buf);
+                    input = getc();
+                    if (input == '\r')
+                        count = 24;
+                    else if (input == ' ')
+                        count = 1;
                 }
 
-
+                printf("%s", buf);
+                count--;
             }
         }
     }
@@ -104,17 +126,26 @@ main()
             
             while (n = fgetline(fd, buf))
             {
-                buf[n] = 0;
-                if (strlen(buf) == strlen(argv[1]))
+                if (count == 0)
+                    break;
+
+                write(1, buf, n);
+                count--;
+            }
+
+            while (n = fgetline(fd, buf))
+            {
+                if (count == 0)
                 {
-                    if (strcmp(buf, argv[1]) == 0)
-                        write(1, buf, n);
+                    input = getc();
+                    if (input == '\r')
+                        count = 24;
+                    else if (input == ' ')
+                        count = 1;
                 }
-                else
-                {
-                    if (strstr(buf, argv[1]))
-                        write(1, buf, n);
-                }
+
+                write(1, buf, n);
+                count--;
             }
             
             close(fd);

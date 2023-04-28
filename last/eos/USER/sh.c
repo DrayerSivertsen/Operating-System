@@ -56,8 +56,8 @@ void do_command(char *command)
     strncpy(tmp_line, command, 128);
     token(tmp_line);
 
-    for (int i = 0; i < argc; i++)
-        printf("argv[%d]=%s\n", i, argv[i]);
+    // for (int i = 0; i < argc; i++)
+    //     printf("argv[%d]=%s\n", i, argv[i]);
     // Check for redirection
     for(int i = 0; i < argc; i++)
     {
@@ -88,7 +88,7 @@ void do_command(char *command)
         char *loc = strstr(command, redirect);
         *loc = 0;
     }
-    printf("command: %s\n", command);
+    // printf("command: %s\n", command);
  
     exec(command);
 }
