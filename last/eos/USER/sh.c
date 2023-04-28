@@ -88,6 +88,7 @@ void do_command(char *command)
         char *loc = strstr(command, redirect);
         *loc = 0;
     }
+    printf("command: %s\n", command);
  
     exec(command);
 }

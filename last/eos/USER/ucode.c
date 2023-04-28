@@ -48,48 +48,23 @@ int fgetc(int fd)
    return (c&0x7F);
 }
 
-int fgets(int fd, char *s)
+int fgetline(int fd, char *s)
 {
-  int c;
-  char *cp, *cq, temp[128];
+ int c;  
+  char *cp = s;
   
-  cp = temp;    // get chars into temp[] first
+  c = fgetc(fd);
 
-  c = getc(fd);
-  while (c!= EOF && c != '\r' && c != '\n'){
+  while ((c != EOF) && (c != '\r') && (c != '\n')){
     *cp++ = c;
-    putc(c);
-    if (c == '\b'){ // handle \b key
-      putc(' ');
-      putc('\b');
-    }
-    c = getc(fd);
+     c = fgetc(fd);
   }
-  putc('\n'); putc('\r');
-
   if (c==EOF) return 0;
-  
-  *cp = 0;   
 
-  // printf("temp=%s\n", temp);
-
-  // cook line in temp[] into s
-  cp = temp; cq = s; 
-
-  while (*cp){
-    if (*cp == '\b'){
-      if (cq > s)
-	  cq--; 
-      cp++;
-      continue;
-    }
-    *cq++ = *cp++;
-  }
-  *cq = 0;
-
-  //printf("s=%s\n", s);
-
-  return strlen(s)+1;  // line=CR or \n only return 1
+  *cp++ = c;         // a string with last char=\n or \r
+  *cp = 0;    
+  //printf("getline: %s", s); 
+  return strlen(s);  // at least 1 because last char=\r or \n
 }
 
 

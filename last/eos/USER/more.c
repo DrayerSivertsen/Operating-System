@@ -1,24 +1,39 @@
 #include "ucode.c"
 
-int grep(char *filename)
+int more(char *filename)
 {
     char mybuf[1024];
     int n;
+    int count = 25;
+    char input;
 
     int fd = open(filename, 0);
     while (n = fgetline(fd, mybuf))
     {
-        if (strlen(mybuf) == strlen(argv[1]))
-        {
-            if (strcmp(mybuf, argv[1]) == 0)
-                printf("%s", mybuf);
-        }
-        else
-        {
-            if (strstr(mybuf, argv[1]))
-                printf("%s", mybuf);
-        }
+        if (count == 0)
+            break;
+
+        printf("%s", mybuf);
+        count--;
     }
+
+    // while (n = fgets(fd, mybuf))
+    // {
+    //     if (count == 0)
+    //     {
+    //         getc(input);
+    //         if (input == '\r')
+    //             count = 25;
+    //         else if (input == ' ')
+    //             count = 1;
+    //     }
+
+    //     if (count == 0)
+    //         break;
+
+    //     printf("%s", mybuf);
+    //     count--;
+    // }
 
     close(fd);
 }
@@ -40,7 +55,7 @@ main()
     fstat(0, &st0);
     fstat(1, &st1);
 
-    if (argc < 3)
+    if (argc < 2)
     {
         if (st_tty.st_ino != st0.st_ino) // stdin has been redirected
         {
@@ -81,11 +96,11 @@ main()
             }
         }
     }
-    else // three arguments
+    else
     {
         if (st_tty.st_ino != st1.st_ino) // stdout has been redirected
         {
-            int fd = open(argv[2], 0);
+            int fd = open(argv[1], 0);
             
             while (n = fgetline(fd, buf))
             {
@@ -106,7 +121,7 @@ main()
         }
         else
         {
-            grep(argv[2]);
+            more(argv[1]);
         }
     }
 }
