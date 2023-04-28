@@ -50,6 +50,7 @@ main(int argc, char *argv[])
 
                 chuid(atoi(argv[2]), atoi(argv[3])); // change uid, gid to user's uid, gid
                 chdir(argv[5]); // change cwd to user's home dir
+                home = argv[5];
                 close(fd); // close /etc/passwd
                 exec(argv[6]); // exec program in user account
             }

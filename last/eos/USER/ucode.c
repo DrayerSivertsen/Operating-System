@@ -26,6 +26,7 @@ typedef unsigned int   u32;
 int pid;
 char line[64], pathname[32], i2[32], i3[32];
 char *name[16], components[64];
+char *home;
 int nk;
 #define EOF -1
 extern char cr;
