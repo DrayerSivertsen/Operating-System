@@ -1,13 +1,8 @@
-(cd USER; ./mku init; ./mku login; ./mku sh; cd ..)
-
+(cd USER; ./mku init; ./mku login; ./mku sh; ./mku ls; cd ..)
+ 
 (cd kernel; ./mk)
-
+ 
 echo ready to go?
 read dummy
-
-qemu-system-arm -M versatilepb -m 256M -sd sdimage -kernel t.bin -serial mon:stdio -serial /dev/pts/7
-
-
-
-
-
+ 
+qemu-system-arm -M versatilepb -m 256M -sd sdimage -kernel t.bin -serial mon:stdio -serial /dev/pts/1

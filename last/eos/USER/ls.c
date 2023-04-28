@@ -1,120 +1,136 @@
 #include "ucode.c"
-
-int ls_file(MINODE *mip, char *name, int dev)
+ 
+char *t1 = "xwrxwrxwr-------";
+char *t2 = "----------------";
+struct stat mystat, *sp;
+ 
+char* basename(char *dir) 
 {
-    // READ Chapter 11.7.3 HOW TO ls
-
+    char *cp = dir;
+    char *bname;
+ 
+    while (*cp != 0) 
+    {
+        bname = cp;
+        while (*cp != '/' && *cp != 0) // increment until / is found or end of path
+            *cp++;
+        *cp = 0;
+        *cp++;
+    }
+ 
+    return bname;
+}
+ 
+void ls_file (char *name)
+{
+    char linkname[64];
     char ftime[64];
-    char linkname[60];
-    int i;
-    char *t1 = "xwrxwrxwr-------";
-    char *t2 = "----------------";
-
-    if ((mip->INODE.i_mode & 0xF000) == 0x8000)
-    { // if (S_ISREG())
-        printf("%c", '-');
-    }
-    if ((mip->INODE.i_mode & 0xF000) == 0x4000)
-    { // if (S_ISDIR())
-        printf("%c", 'd');
-    }
-    if ((mip->INODE.i_mode & 0xF000) == 0xA000)
-    { // if (S_ISLNK())
-        printf("%c", 'l');
-    }
-    for (i = 8; i >= 0; i--)
+    char *tmp;
+    int r;
+    sp = &mystat;
+ 
+    if ( (r = stat(name, sp)) < 0)
     {
-        if (mip->INODE.i_mode & (1 << i))
-        { // print r|w|x
-            printf("%c", t1[i]);
-        }
+        printf("failed to ls file\n");
+        return;
+    }
+ 
+    if ((sp->st_mode & 0xF000) == 0x8000) { // if (S_ISREG())
+        tmp = "-";
+        printf("%s", tmp);
+    }
+    if ((sp->st_mode & 0xF000) == 0x4000) { // if (S_ISDIR())
+        tmp = "d";
+        printf("%s", tmp);
+    }
+    if ((sp->st_mode & 0xF000) == 0xA000) { // if (S_ISLNK())
+        tmp = "l";
+        printf("%s", tmp);
+    }
+    for (int i=8; i >= 0; i--) 
+    {
+        if (sp->st_mode & (1 << i))
+            printc(t1[i]);
         else
-        {
-            printf("%c", t2[i]); // or print -
-        }
+            printc(t2[i]);
     }
-    printf("%4d ", mip->INODE.i_links_count); // link count
-    printf("%4d ", mip->INODE.i_gid);         // gid
-    printf("%4d ", mip->INODE.i_uid);         // uid
-
-    // print time
-
-    time_t time = (time_t)mip->INODE.i_ctime;
-    strcpy(ftime, ctime(&time));  // print time in calendar form
-    ftime[strlen(ftime) - 1] = 0; // kill \n at end
-    printf("%s ", ftime);
-
-    printf("%8d \t", mip->INODE.i_size); // file size
-
-    // print name
-    printf("%s", basename(name)); // print file basename
+ 
+    printf(" %d",sp->st_nlink); // link count
+    printf(" %d",sp->st_gid); // gid
+    printf(" %d",sp->st_uid); // uid
+ 
+ 
+    printf(" %d",sp->st_size); // file size
+ 
+    char tmp_line[128];
+    strcpy(tmp_line, name);
+    printf("%s", basename(tmp_line)); // print file basename
     // print -> linkname if symbolic file
-    if ((mip->INODE.i_mode & 0xF000) == 0xA000)
-    {
+    if ((sp->st_mode & 0xF000)== 0xA000) {
         // use readlink() to read linkname
-        // errno = 0;
-        my_readlink(basename(name), linkname);
-        // fprintf(stderr, "errno: %d\n", errno);
+        readlink(name, linkname);
         printf(" -> %s", linkname); // print linked name
     }
-
-    printf("\t[%d %2d]", mip->dev, mip->ino);
-
-    printf("\n");
+    printf(" \n");
 }
-
-int ls_dir(MINODE *mip, int dev)
+ 
+int ls_dir(char *dname)
 {
-    char buf[BLKSIZE], temp[256];
+    char filename[128], buf[1024], tmp[128];
     DIR *dp;
     char *cp;
-
-    get_block(dev, mip->INODE.i_block[0], buf);
+ 
+    int fd = open(dname, O_RDONLY);
+    read(fd, buf, 1024);
     dp = (DIR *)buf;
     cp = buf;
-
-    while (cp < buf + BLKSIZE)
+ 
+    while (cp < buf + 1024) // loop through all entries in the directory
     {
-        MINODE *current_minode = iget(dev, dp->inode);
-        strncpy(temp, dp->name, dp->name_len);
-        temp[dp->name_len] = 0;
-        ls_file(current_minode, temp, dev);
-        iput(current_minode);
-        cp += dp->rec_len;
+        strncpy(tmp, dp->name, 128);
+        tmp[dp->name_len] = 0;
+ 
+        strcpy(filename, dname);
+        strcat(filename, "/");
+        strcat(filename, tmp);
+        ls_file(filename);
+ 
+        cp += dp->rec_len; // advance to next entry
         dp = (DIR *)cp;
     }
-    printf("\n");
 }
-
-int ls(char *pathname)
+int main()
 {
-    struct stat* sp; // stat pointer
-    stat(pathname, sp);
-    int dev, lsIno;
-
-    if (strcmp(pathname, "")) // check if pathname is empty
-    {
-        lsIno = getino(pathname, &dev);
-        if (lsIno == 0)
-        {
-            printf("ERROR: file/directory not found!\n");
-            return -1;
-        }
-
-        stat(pathname, sp);
-
-        if (S_ISDIR(sp->st_mode)) // pathname is a directory
-        {
-            ls_dir(lsINODE, dev);
-        }
-        else // pathname is a file
-        {
-            ls_file(lsINODE, name[n - 1], dev);
-        }
-        iput(lsINODE); // release minode
-    }
+    struct stat mystat, *sp;
+    sp = &mystat;
+ 
+    int r;
+    char *path;
+    char filename[1024], cwd[1024];
+ 
+ 
+    if (argc == 1)
+        path = "./";
     else
+        path = argv[1];
+ 
+ 
+    if ((r = stat(path, sp)) < 0)
     {
-        ls_dir(running->cwd, dev); // if no pathname call on cwd
+        exit(1); // path not found
     }
+ 
+    strcpy(filename, path);
+    if (path[0] != '/') // relative or absolute path
+    {
+        getcwd(cwd);
+        strcpy(filename, cwd);
+        strcat(filename, "/");
+        strcat(filename, path);
+    }
+ 
+    if ((sp->st_mode & 0xF000) == 0x4000) // check for file or directory
+        ls_dir(filename);
+    else
+        ls_file(filename);
 }
