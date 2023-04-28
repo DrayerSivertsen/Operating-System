@@ -54,14 +54,8 @@ main(int argc, char *argv[])
                 close(fd); // close /etc/passwd
                 exec(argv[6]); // exec program in user account
             }
-            else
-            {
-                printf("login failed, try again\n");
-            }
         }
- 
- 
- 
+        printf("login failed, try again\n");
     }
 }
  

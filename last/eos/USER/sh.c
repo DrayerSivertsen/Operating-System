@@ -124,6 +124,8 @@ void do_pipe(char *cmdLine, int *pd)
  
 main()
 {
+    signal(2, 1);
+
     while (1)
     {
         // get command line from user
@@ -135,6 +137,9 @@ main()
  
         // printf("cmdline: %s\n", cmdline);
         cmd = argv[0];
+
+        if (line[0] == 0)
+            continue;
  
         // if command is non-trivial (not cd or exit)
         if (strcmp(cmd, "cd") == 0)
@@ -145,6 +150,8 @@ main()
                 chdir(home);
             continue;
         }
+        else if (strcmp(cmd, "logout") == 0)
+            exit(0);
         else if (strcmp(cmd, "exit") == 0)
             exit(0);
  
@@ -159,7 +166,6 @@ main()
         else
             do_pipe(cmdline, 0);
  
-        // check for redirection
     }
  
  
