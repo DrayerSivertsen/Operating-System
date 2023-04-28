@@ -35,6 +35,7 @@ main()
     {
         if (st_tty.st_ino != st0.st_ino) // stdin has not been redirected
         {
+            printf("1\n");
             while (n = getline(buf))
             {
                 buf[n] = 0; // as a null terminated string
@@ -43,12 +44,12 @@ main()
         }
         else
         {
+            printf("2\n");
             while (n = gets(buf))
             {
                 buf[n] = 0; // as a null terminated string
-                printf("%s", buf);
+                printf("%s\n", buf);
             }
-
         }
  
 
@@ -57,10 +58,20 @@ main()
     {
         if (st_tty.st_ino != st1.st_ino) // stdout has been redirected
         {
+            printf("3\n");
+            int fd = open(argv[1], 0);
             
+            while (n = read(fd, buf, 1024))
+            {
+                buf[n] = 0;
+                printf("%s", buf); // fix the size of print
+            }
+            
+            close(fd);
         }
         else
         {
+            printf("4\n");
             cat(argv[1]);
         }
     }
