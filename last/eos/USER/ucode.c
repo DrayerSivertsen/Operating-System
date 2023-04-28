@@ -33,6 +33,67 @@ extern char cr;
 
 void putchar(const char c){ }
 
+int fgetc(int fd)
+{
+   int c, n;
+   n = read(fd, &c, 1);
+
+   /********************************************************************* 
+   getc from KBD will NOT get 0 byte but reading file (after redirect 0 
+   to file) may get 0 byte ==> MUST return 2-byte -1 to differentiate.
+   **********************************************************************/
+
+   if (n==0 || c==4 || c==0 ) return EOF;  
+                                
+   return (c&0x7F);
+}
+
+int fgets(int fd, char *s)
+{
+  int c;
+  char *cp, *cq, temp[128];
+  
+  cp = temp;    // get chars into temp[] first
+
+  c = getc(fd);
+  while (c!= EOF && c != '\r' && c != '\n'){
+    *cp++ = c;
+    putc(c);
+    if (c == '\b'){ // handle \b key
+      putc(' ');
+      putc('\b');
+    }
+    c = getc(fd);
+  }
+  putc('\n'); putc('\r');
+
+  if (c==EOF) return 0;
+  
+  *cp = 0;   
+
+  // printf("temp=%s\n", temp);
+
+  // cook line in temp[] into s
+  cp = temp; cq = s; 
+
+  while (*cp){
+    if (*cp == '\b'){
+      if (cq > s)
+	  cq--; 
+      cp++;
+      continue;
+    }
+    *cq++ = *cp++;
+  }
+  *cq = 0;
+
+  //printf("s=%s\n", s);
+
+  return strlen(s)+1;  // line=CR or \n only return 1
+}
+
+
+
 int getc()
 {
    int c, n;

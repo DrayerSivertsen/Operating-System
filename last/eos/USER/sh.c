@@ -52,29 +52,41 @@ int scan(char *cmdLine)
  
 void do_command(char *command)
 {
+    char *redirect = "";
     strncpy(tmp_line, command, 128);
     token(tmp_line);
+
+    for (int i = 0; i < argc; i++)
+        printf("argv[%d]=%s\n", i, argv[i]);
     // Check for redirection
     for(int i = 0; i < argc; i++)
     {
         if(strcmp(argv[i], "<") == 0) // redirect stdin
         {
+            redirect = "<";
             close(0);
             int fd = open(argv[i+1], O_RDONLY);
             argv[i] = '\0';
         }
         else if(strcmp(argv[i], ">") == 0) // redirect stdout
         {
+            redirect = ">";
             close(1);
             int fd = open(argv[i+1], O_WRONLY|O_CREAT);
             argv[i] = '\0';
         }
         else if(strcmp(argv[i], ">>") == 0)
         {
+            redirect = ">>";
             close(1);
             int fd = open(argv[i+1], O_WRONLY|O_CREAT|O_APPEND);
             argv[i] = '\0';
         }
+    }
+    if (strlen(redirect) > 0)
+    {
+        char *loc = strstr(command, redirect);
+        *loc = 0;
     }
  
     exec(command);
