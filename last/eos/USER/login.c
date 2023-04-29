@@ -46,7 +46,7 @@ main(int argc, char *argv[])
  
             if (strcmp(username, argv[0]) == 0 && strcmp(password, argv[1]) == 0)
             {
-                printf("login successful\n");
+                printf("logged in %s successful\n", argv[0]);
  
                 chuid(atoi(argv[2]), atoi(argv[3])); // change uid, gid to user's uid, gid
                 chdir(argv[5]); // change cwd to user's home dir

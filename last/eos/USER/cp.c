@@ -14,6 +14,7 @@ void cp(char *filename, char *newfile)
     {
         if (c == 255)
         {
+            printf("n=%d\n", count);
             write(fd_new, buf, count);
             break;
         }
@@ -22,7 +23,7 @@ void cp(char *filename, char *newfile)
 
         if (count == 1023)
         {
-            printf("just wrote\n");
+            printf("n=1024 ");
             write(fd_new, buf, count);
             count = 0;
         }

@@ -15,18 +15,20 @@ int scan(char *cmdLine)
         i--;
         if(strcmp(argv[i], "|") == 0)
         {
-            strcpy(tail, argv[i+1]);
+            int save = i;
+            i += 1;
+            strcpy(tail, argv[i]);
  
-            if(argv[i+2])
+            for (i += 1; i < argc; i++)
             {
                 strcat(tail, " ");
-                strcat(tail, argv[i+2]);
+                strcat(tail, argv[i]);
             }
             int j = 0;
             strcpy(head, argv[j]);
             strcat(head, " ");
             j++;
-            while(j < i)
+            while(j < save)
             {
                 strcat(head, argv[j]);
                 strcat(head, " ");
@@ -37,13 +39,7 @@ int scan(char *cmdLine)
         }
     }
  
-    strcpy(head, argv[0]);
- 
-    if(argv[1])
-    {
-        strcat(head, " ");
-        strcat(head, argv[1]);
-    }
+    strcpy(head, cmdLine);
  
     strcpy(tail, "\0");
  
@@ -56,8 +52,6 @@ void do_command(char *command)
     strncpy(tmp_line, command, 128);
     token(tmp_line);
 
-    // for (int i = 0; i < argc; i++)
-    //     printf("argv[%d]=%s\n", i, argv[i]);
     // Check for redirection
     for(int i = 0; i < argc; i++)
     {
@@ -88,7 +82,6 @@ void do_command(char *command)
         char *loc = strstr(command, redirect);
         *loc = 0;
     }
-    // printf("command: %s\n", command);
  
     exec(command);
 }
@@ -108,7 +101,6 @@ void do_pipe(char *cmdLine, int *pd)
     strncpy(tmp_line, cmdLine, 128);
     token(tmp_line);
     int hasPipe = scan(cmdLine);
-    
  
     if(hasPipe)
     {
@@ -149,7 +141,6 @@ main()
         strncpy(tmp_line, cmdline, 128);
         token(tmp_line);
  
-        // printf("cmdline: %s\n", cmdline);
         cmd = argv[0];
 
         if (argv[0] == 0)
@@ -181,6 +172,4 @@ main()
             do_pipe(cmdline, 0);
  
     }
- 
- 
 }

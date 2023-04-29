@@ -22,16 +22,15 @@ int more(char *filename)
         if (count == 0)
         {
             input = getc();
-            if (input == '\r')
+            if (input == ' ')
                 count = 24;
-            else if (input == ' ')
+            else
                 count = 1;
         }
 
         printf("%s", mybuf);
         count--;
     }
-
     close(fd);
 }
 
@@ -47,7 +46,6 @@ main()
 
     int count = 24;
     char input;
-
 
     gettty(tty_buf);
 
@@ -77,9 +75,9 @@ main()
                 if (count == 0)
                 {
                     input = getc();
-                    if (input == '\r')
+                    if (input == ' ')
                         count = 24;
-                    else if (input == ' ')
+                    else
                         count = 1;
                 }
 
@@ -107,9 +105,9 @@ main()
                 if (count == 0)
                 {
                     input = getc();
-                    if (input == '\r')
+                    if (input == ' ')
                         count = 24;
-                    else if (input == ' ')
+                    else
                         count = 1;
                 }
 
@@ -138,9 +136,9 @@ main()
                 if (count == 0)
                 {
                     input = getc();
-                    if (input == '\r')
+                    if (input == ' ')
                         count = 24;
-                    else if (input == ' ')
+                    else
                         count = 1;
                 }
 
@@ -152,7 +150,7 @@ main()
         }
         else
         {
-            more(argv[1]);
+            more(argv[1]); // normal case
         }
     }
 }

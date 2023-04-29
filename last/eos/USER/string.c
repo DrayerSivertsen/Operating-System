@@ -108,7 +108,7 @@ char *strstr(char *s1, char *s2)
   int i, len;
   len = strlen(s2);
 
-  for (i=0; i<strlen(s1)-strlen(s2); i++){
+  for (i=0; i<=strlen(s1)-strlen(s2); i++){
     if (strncmp(&s1[i], s2, len)==0)
          return &s1[i];
   }

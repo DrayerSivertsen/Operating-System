@@ -24,7 +24,6 @@ main()
     struct stat mystat, st_tty, st0, st1;
     char tty_buf[128];
 
-
     gettty(tty_buf);
 
     stat(tty_buf, &st_tty);
@@ -68,7 +67,7 @@ main()
         }
         else
         {
-            cat(argv[1]);
+            cat(argv[1]); // normal case
         }
     }
 }

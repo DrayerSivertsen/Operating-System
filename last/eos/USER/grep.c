@@ -106,7 +106,7 @@ main()
         }
         else
         {
-            grep(argv[2]);
+            grep(argv[2]); // normal case
         }
     }
 }
