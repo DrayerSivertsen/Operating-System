@@ -22,7 +22,23 @@ Additions to previous process functions to include umode (user mode) and kernel 
 Expansion upon kernel fork command to support user mode, and addition of exec function to process different user mode images. This lab is working towards the os layer communication of user mode and kernel mode.
 
 ### Lab7
-Buffer management support to include multiple buffers and buffer caching. This is to show demonstrate the principles of buffer management algorithms as well as its shortcomings. The project compares the performances of the Unix buffer management algorithm and the PV algorithm. 
+Buffer management support to include multiple buffers and buffer caching. This is to show demonstrate the principles of buffer management algorithms as well as its shortcomings. The project compares the performances of the Unix buffer management algorithm and the PV algorithm.
+
+### Last Assignment
+Embedded Operating System Kernel
+
+A complete end to end embedded operating system kernel with the following: 
+
+- 60 system call functions organized into four groups:
+Group 1 (0-19) is for process management. 
+Group 2 (20-49) is for file system operations. 
+Group 3 is for signals and signal processing, and 
+Group 4 is for miceseleous system calls.
+
+- User mode and kernel mode space
+- Login processes forked across different serial ports to allow for three concurrent users
+- Linux file system structure
+- Standard Linux kernel commands (ls, cd, cat, grep, more, l2u, etc)
 
 
 ## Overview of topics includes:
