@@ -27,7 +27,7 @@ Buffer management support to include multiple buffers and buffer caching. This i
 ### Last Assignment
 Embedded Operating System Kernel
 
-A complete end to end embedded operating system kernel with the following: 
+A complete end to end embedded operating system kernel with emulated data structures and OS optimizations in the following categories: 
 
 - 60 system call functions organized into four groups:
     - Group 1 (0-19) is for process management. 
