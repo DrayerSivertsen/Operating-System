@@ -24,7 +24,7 @@ Expansion upon kernel fork command to support user mode, and addition of exec fu
 ### Lab7
 Buffer management support to include multiple buffers and buffer caching. This is to show demonstrate the principles of buffer management algorithms as well as its shortcomings. The project compares the performances of the Unix buffer management algorithm and the PV algorithm.
 
-### Last Assignment
+## Last Assignment
 Embedded Operating System Kernel
 
 A complete end to end embedded operating system kernel with emulated data structures and OS optimizations in the following categories: 
