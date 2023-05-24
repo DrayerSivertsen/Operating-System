@@ -30,10 +30,10 @@ Embedded Operating System Kernel
 A complete end to end embedded operating system kernel with the following: 
 
 - 60 system call functions organized into four groups:
-Group 1 (0-19) is for process management. 
-Group 2 (20-49) is for file system operations. 
-Group 3 is for signals and signal processing, and 
-Group 4 is for miceseleous system calls.
+    - Group 1 (0-19) is for process management. 
+    - Group 2 (20-49) is for file system operations. 
+    - Group 3 is for signals and signal processing, and 
+    - Group 4 is for miceseleous system calls.
 
 - User mode and kernel mode space
 - Login processes forked across different serial ports to allow for three concurrent users
