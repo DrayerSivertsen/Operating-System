@@ -1,5 +1,28 @@
-# Operating System
-This repo includes various OS level development projects working torward the design and implementation of a REAL embedded operating system.
+<h1 align="center">Operating System</h1>
+
+<p align="center">
+  <img src="eos_demo.gif">
+</p>
+
+This repo includes various OS level development projects working toward the design and implementation of a REAL embedded operating system. Including the culmination of all learnings in the embedded operating system demoed above!
+
+## Embedded Operating System
+Embedded Operating System Kernel
+
+A complete end to end embedded operating system kernel with emulated data structures and OS optimizations in the following categories: 
+
+- 60 system call functions organized into four groups:
+    - Group 1 (0-19) is for process management. 
+    - Group 2 (20-49) is for file system operations. 
+    - Group 3 is for signals and signal processing, and 
+    - Group 4 is for miceseleous system calls.
+
+- User mode and kernel mode space
+- Login processes forked across different serial ports to allow for three concurrent users
+- Linux file system structure
+- Standard Linux kernel commands (ls, cd, cat, grep, more, l2u, cp, etc)
+    - Piping
+    - I/O redirection
 
 ## Project Descriptions
 ### Lab1
@@ -24,21 +47,7 @@ Expansion upon kernel fork command to support user mode, and addition of exec fu
 ### Lab7
 Buffer management support to include multiple buffers and buffer caching. This is to show demonstrate the principles of buffer management algorithms as well as its shortcomings. The project compares the performances of the Unix buffer management algorithm and the PV algorithm.
 
-## Last Assignment
-Embedded Operating System Kernel
 
-A complete end to end embedded operating system kernel with emulated data structures and OS optimizations in the following categories: 
-
-- 60 system call functions organized into four groups:
-    - Group 1 (0-19) is for process management. 
-    - Group 2 (20-49) is for file system operations. 
-    - Group 3 is for signals and signal processing, and 
-    - Group 4 is for miceseleous system calls.
-
-- User mode and kernel mode space
-- Login processes forked across different serial ports to allow for three concurrent users
-- Linux file system structure
-- Standard Linux kernel commands (ls, cd, cat, grep, more, l2u, etc)
 
 
 ## Overview of topics includes:
